@@ -8,9 +8,9 @@ const TeamCard = () => {
       <div className="bg-gray-400 w-[250px] h-[295px] rounded-lg  overflow-hidden relative flex justify-center">
         <div className="bg-[url(./assets/me.png)] bg-cover bg-center bg-no-repeat hover:scale-105 h-full w-full transition-all"></div>
         <div className="bg-gray-500/40 backdrop-blur-sm p-3 rounded-lg gap-5 flex absolute bottom-[-50px] group-hover:bottom-4 transition-all duration-300	">
-          <FaFacebookF className="text-2xl text-white" />
-          <FaInstagram className="text-2xl text-white" />
-          <FaXTwitter className="text-2xl text-white" />
+          <FaFacebookF className="text-2xl text-white hover:scale-125 duration-300 transition-all hover:w-8 hover:mx-1" />
+          <FaInstagram className="text-2xl text-white hover:scale-125 transition-all duration-300 hover:w-8 hover:mx-1" />
+          <FaXTwitter className="text-2xl text-white hover:scale-125 transition-all duration-300 hover:w-8 hover:mx-1" />
         </div>
       </div>
 
