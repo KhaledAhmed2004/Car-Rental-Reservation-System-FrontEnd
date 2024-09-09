@@ -6,7 +6,7 @@ import { TbCurrencyTaka } from "react-icons/tb";
 
 const ShowcaseCard = () => {
   return (
-    <div className="bg-gray-400 p-4 rounded-lg justify-center">
+    <div className="bg-gray-400 h-[220px] p-4 rounded-lg justify-center">
       <h2>Rang Rover Sport</h2>
       <div className="flex h-[150px] items-end justify-between">
         <div className="flex items-center">

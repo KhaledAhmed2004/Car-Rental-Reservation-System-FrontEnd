@@ -8,6 +8,6 @@ export default {
         montserrat: ["Montserrat", "sans-serif"],
       },
     },
-  },
+  },  
   plugins: [],
 };
