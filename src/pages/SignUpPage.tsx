@@ -1,25 +1,48 @@
 import React from "react";
 
-const SignInPage = () => {
+const SignUpPage = () => {
   return (
     <div className="h-screen w-full flex items-center">
       <div className="h-[60vh] w-[60%] bg-red-200 mx-auto items-center justify-center rounded-lg flex">
         <div className="w-[60%] h-full bg-red-300 flex items-center justify-center text-center mx-auto">
           <div className="">
-            <h3 className="text-lg font-semibold text-center py-2">Sign In</h3>
+            <h3 className="text-lg font-semibold text-center py-2">Sign Up</h3>
             <form className="w-full px-20 space-y-3">
+              <div className="flex gap-3">
+                <input
+                  className="p-2 rounded-lg w-full"
+                  placeholder="First Name"
+                  type="email"
+                />
+                <input
+                  className="p-2 rounded-lg w-full"
+                  placeholder="Last Name"
+                  type="email"
+                />
+              </div>
+              <input
+                className="p-2 rounded-lg w-full"
+                placeholder="Enter Your Full Name..."
+                type="email"
+              />
               <input
                 className="p-2 rounded-lg w-full"
                 placeholder="Email..."
                 type="email"
               />
+
               <input
                 className="p-2 rounded-lg w-full"
                 placeholder="Password..."
                 type="password"
               />
+              <input
+                className="p-2 rounded-lg w-full"
+                placeholder="Confirm Password..."
+                type="password"
+              />
               <button className="bg-gray-400 rounded-lg" type="submit">
-                Sign In
+                Sign Up
               </button>
             </form>
             <a href="">Forget Password</a>
@@ -39,4 +62,4 @@ const SignInPage = () => {
   );
 };
 
-export default SignInPage;
+export default SignUpPage;

@@ -5,7 +5,8 @@ import HomePage from "../pages/HomePage";
 import AboutUsPage from "../pages/AboutUsPage";
 import CarListingPage from "../pages/CarListingPage";
 import CarDetailsPage from "../pages/CarDetailsPage";
-import SignInpage from "../pages/SignInpage";
+import SignUpPage from "../pages/SignUpPage";
+import SignInPage from "../pages/SignInpage";
 
 const Router = createBrowserRouter([
   {
@@ -16,7 +17,8 @@ const Router = createBrowserRouter([
       { path: "/aboutUs", element: <AboutUsPage /> },
       { path: "/car-listing", element: <CarListingPage /> },
       { path: "/car/:id", element: <CarDetailsPage /> },
-      { path: "/signIn", element: <SignInpage /> },
+      { path: "/signIn", element: <SignInPage /> },
+      { path: "/signUp", element: <SignUpPage /> },
     ],
   },
 ]);
