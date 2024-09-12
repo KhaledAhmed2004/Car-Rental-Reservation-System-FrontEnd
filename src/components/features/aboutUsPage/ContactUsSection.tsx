@@ -60,7 +60,12 @@ const ContactUsSection = () => {
               placeholder="Write Your Message..."
               aria-label="Message"
             />
-            <PrimaryButton label={"Send"} onClick={"send"} />
+            <PrimaryButton
+              label={"Send"}
+              onClick={() => {
+                console.log("Contact");
+              }}
+            />
           </form>
         </div>
       </div>

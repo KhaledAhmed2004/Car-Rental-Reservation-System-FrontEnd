@@ -6,7 +6,6 @@ const navigationLink = [
   { id: 1, to: "/", label: "Home" },
   { id: 2, to: "/aboutUs", label: "About Us" },
   { id: 3, to: "/booking", label: "Booking" },
-  { id: 4, to: "/contact", label: "Contact" },
   { id: 4, to: "/car-listing", label: "Car Listing" },
 ];
 

@@ -4,8 +4,18 @@ import PrimaryButton from "../atoms/PrimaryButton";
 const AuthButtons = () => {
   return (
     <div className="flex gap-2">
-      <PrimaryButton onClick={"onClick"} label={"Login"} />
-      <PrimaryButton onClick={"onClick"} label={"Sign Up"} />
+      <PrimaryButton
+        onClick={() => {
+          console.log("Login");
+        }}
+        label={"Login"}
+      />
+      <PrimaryButton
+        onClick={() => {
+          console.log("Sing Up");
+        }}
+        label={"Sign Up"}
+      />
     </div>
   );
 };

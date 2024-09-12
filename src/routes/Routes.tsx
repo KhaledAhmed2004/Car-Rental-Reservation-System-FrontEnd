@@ -15,6 +15,7 @@ import ManageCarPage from "../pages/adminDashboard/ManageCarPage";
 import ManageBookingsPage from "../pages/adminDashboard/ManageBookingsPage";
 import ManageReturnCarPage from "../pages/adminDashboard/ManageReturnCarPage";
 import ManageUser from "../pages/adminDashboard/ManageUser";
+import BookingPage from "../pages/BookingPage";
 
 const Router = createBrowserRouter([
   {
@@ -27,6 +28,7 @@ const Router = createBrowserRouter([
       { path: "/car/:id", element: <CarDetailsPage /> },
       { path: "/signIn", element: <SignInPage /> },
       { path: "/signUp", element: <SignUpPage /> },
+      { path: "/booking", element: <BookingPage /> },
     ],
   },
   {
