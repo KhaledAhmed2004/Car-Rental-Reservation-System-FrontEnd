@@ -1,16 +1,43 @@
 import React from "react";
 import CardWithImage from "../../common/molecules/CardWithImage";
 import Heading from "../../common/atoms/Heading";
-
+import { motion } from "framer-motion";
+import locationAnimationData from "../../../assets/locationAnimation.json";
+import costomerAnimationData from "../../../assets/costomerAnimation.json";
+import bookingAnimationData from "../../../assets/bookingAnimation.json";
+import bookingAnimationData1 from "../../../assets/bookingAnimation1.json";
 const WhyChooseUs = () => {
   return (
     <>
       <Heading>Why Choose RENT?</Heading>
-      <div className="flex gap-5">
-        <CardWithImage />
-        <CardWithImage />
-        <CardWithImage />
-      </div>
+      <motion.div
+        initial={{ y: 100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ staggerChildren: 0.3, duration: 0.5 }}
+        className="flex gap-5 justify-between"
+      >
+        <CardWithImage
+          heading={"Fast & Easy Booking"}
+          animationData={bookingAnimationData}
+          discripction={
+            "Book your car online or offline. Follow the easy process to book you car online. Or just call us any time from anywhere."
+          }
+        />
+        <CardWithImage
+          heading={"Many Pickup Location"}
+          animationData={locationAnimationData}
+          discripction={
+            "Enthusiastically magnetic initiatives with cross-platform sources. Dynamically target testing procedures through effective."
+          }
+        />
+        <CardWithImage
+          heading={"Customer Satisfaction"}
+          animationData={costomerAnimationData}
+          discripction={
+            "Globally user centric method interactive. Seamlessly revolutionize unique portals corporate collaboration."
+          }
+        />
+      </motion.div>
     </>
   );
 };

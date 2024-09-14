@@ -5,10 +5,12 @@ import Footer from "../components/common/organisms/Footer";
 
 const MainLayout = () => {
   return (
-    <div className="mx-auto max-w-7xl font-montserrat">
+    <div className="font-montserrat bg-gray-100">
       <Header />
-      <Outlet />
-      <Footer />
+      <div className="mx-auto max-w-7xl pt-[80px]">
+        <Outlet />
+        <Footer />
+      </div>
     </div>
   );
 };

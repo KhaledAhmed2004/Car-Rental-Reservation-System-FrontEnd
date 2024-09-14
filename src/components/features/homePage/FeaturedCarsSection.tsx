@@ -5,9 +5,8 @@ import Heading from "../../common/atoms/Heading";
 const FeaturedCarsSection = () => {
   return (
     <>
-      {/* <h2 className="text-center text-4xl py-7"> Our Featured Cars</h2> */}
       <Heading>Our Feature Cars</Heading>
-      <div className="gap-6 grid grid-cols-4">
+      <div className="gap-6 grid grid-cols-3">
         <ShowcaseCard />
         <ShowcaseCard />
         <ShowcaseCard />
