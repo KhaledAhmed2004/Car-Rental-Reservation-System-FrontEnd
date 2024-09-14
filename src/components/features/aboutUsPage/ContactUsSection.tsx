@@ -33,30 +33,30 @@ const ContactUsSection = () => {
           <form className="space-y-2">
             <div className="flex w-full gap-2">
               <input
-                className="bg-gray-100 p-2 w-full flex-1 rounded-lg"
+                className="bg-white p-2 w-full flex-1 rounded-lg focus:outline-none"
                 type="text"
                 placeholder="Your Full Name"
               />
               <input
-                className="bg-gray-100 p-2 w-full flex-1 rounded-lg"
+                className="bg-white p-2 w-full flex-1 rounded-lg focus:outline-none"
                 type="text"
                 placeholder="Email..."
               />
             </div>
             <div className="w-full flex gap-2">
               <input
-                className="bg-gray-100 p-2 flex-1 w-full rounded-lg"
+                className="bg-white p-2 flex-1 w-full rounded-lg focus:outline-none"
                 type="text"
                 placeholder="Phone Number"
               />
               <input
-                className="bg-gray-100 p-2 flex-1 w-full rounded-lg"
+                className="bg-white p-2 flex-1 w-full rounded-lg focus:outline-none"
                 type="text"
                 placeholder="Subject..."
               />
             </div>
             <textarea
-              className="bg-gray-100 p-2 w-full rounded-lg"
+              className="bg-white p-2 w-full rounded-lg focus:outline-none "
               placeholder="Write Your Message..."
               aria-label="Message"
             />

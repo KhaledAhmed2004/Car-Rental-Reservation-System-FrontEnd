@@ -4,7 +4,7 @@ import ShowcaseCard from "../components/common/molecules/ShowcaseCard";
 
 const CarListingPage = () => {
   return (
-    <div className="flex gap-4">
+    <div className="flex gap-4 pt-4">
       <div className="bg-gray-200 h-screen rounded-lg w-[28%]">
         <div className="p-8">
           <div className="relative flex items-center">
@@ -70,7 +70,7 @@ const CarListingPage = () => {
           </div>
         </div>
       </div>
-      <div className="w-full rounded-lg grid grid-cols-3 gap-8 h-fit">
+      <div className="w-full rounded-lg grid grid-cols-3 gap-4 h-fit">
         <ShowcaseCard />
         <ShowcaseCard />
         <ShowcaseCard />
