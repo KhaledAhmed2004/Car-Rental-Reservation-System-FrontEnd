@@ -17,7 +17,7 @@ const HeroSection = () => {
       {/* Main container for the hero section with full viewport height */}
       <div className="relative overflow-hidden w-full h-[calc(100vh-80px)] py-4">
         {/* Content container for heading and button */}
-        <div className="w-[70%] mx-auto items-center space-y-8 z-[100]">
+        <div className="w-[70%] mx-auto items-center space-y-4 md:space-y-8 z-[100]">
           {/* Animated heading */}
           <motion.h1
             initial={{ y: 100, opacity: 0 }} // Starts from below and invisible
@@ -28,7 +28,7 @@ const HeroSection = () => {
               stiffness: 150, // Bouncy effect
               damping: 10, // Smooths out the bounce
             }}
-            className="text-6xl text-center"
+            className="text-2xl font-medium md:text-4xl lg:text-6xl text-center"
           >
             Rent a Car In Easiest and Fastest Way
           </motion.h1>
@@ -52,12 +52,12 @@ const HeroSection = () => {
         </div>
 
         {/* Background image with absolute positioning */}
-        <div className="absolute bottom-[-15px] left-1/2 transform -translate-x-1/2 w-[90%] bg-[url(./assets/car.png)] bg-contain bg-no-repeat bg-center h-3/4 flex items-end"></div>
+        <div className="absolute bottom-20 md:bottom-4 lg:bottom-[-15px] left-1/2 transform -translate-x-1/2 w-[90%] bg-[url(./assets/car.png)] bg-contain bg-no-repeat bg-center h-3/4 flex items-end"></div>
 
         {/* White overlay animation that slides upward */}
         <motion.div
           initial={{ y: 0, opacity: 1 }}
-          animate={{ y: -1000, opacity: 1 }}
+          animate={{ y: -1200, opacity: 1 }}
           transition={{ duration: 1 }}
           className="bg-white h-full absolute w-full"
         ></motion.div>

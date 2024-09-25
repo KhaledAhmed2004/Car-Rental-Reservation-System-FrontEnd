@@ -3,15 +3,13 @@ import ContactUsSection from "../components/features/aboutUsPage/ContactUsSectio
 import AboutCompanySection from "../components/features/aboutUsPage/AboutCompanySection";
 import OurTeamSection from "../components/features/aboutUsPage/OurTeamSection";
 import CarTypesSection from "../components/features/aboutUsPage/CarTypesSection";
-import ValuesAndCommitment from "../components/common/molecules/ValuesAndCommitment";
 
 const AboutUsPage = () => {
   return (
     <div className="pt-4">
       <AboutCompanySection />
-      <CarTypesSection />
-      {/* <ValuesAndCommitment /> */}
       <OurTeamSection />
+      <CarTypesSection />
       <ContactUsSection />
     </div>
   );

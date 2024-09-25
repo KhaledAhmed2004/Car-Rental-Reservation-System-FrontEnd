@@ -7,25 +7,26 @@ import { motion } from "framer-motion";
 
 const Footer = () => {
   return (
-    <footer className="mt-4 items-center justify-center pb-4">
-      <div className="border-[3px] px-6 pt-4 rounded-lg bg-white ">
-        <div className="flex justify-between items-center">
-          <div className="flex flex-col w-[30%] justify-center">
+    <footer className="mt-4">
+      <div className="border-t-2 px-6 pt-4 rounded-lg bg-white">
+        <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-8 md:flex-row md:justify-between md:items-start">
+          {/* Logo and description */}
+          <div className="flex flex-col items-start lg:w-1/3 text-left md:w-1/2">
             <Logo />
-            <p>
+            <p className="mt-4">
               Rent your perfect car in minutes! Affordable rates, easy booking,
               and a wide selection. Drive away today!
             </p>
           </div>
-          <div className="pl-6 pt-6">
-            <ul>
+          {/* Navigation Links */}
+          <div className="flex flex-col md:items-start lg:items-center md:w-1/4 lg:w-1/3">
+            <ul className="space-y-2">
               <motion.li whileHover={{ x: 5 }}>
                 <NavLink to={"/"}>Home</NavLink>
               </motion.li>
               <motion.li whileHover={{ x: 5 }}>
                 <NavLink to={"aboutUs"}>About Us</NavLink>
               </motion.li>
-
               <motion.li whileHover={{ x: 5, color: "red" }}>
                 <NavLink to={"booking"}>Booking</NavLink>
               </motion.li>
@@ -34,31 +35,36 @@ const Footer = () => {
               </motion.li>
             </ul>
           </div>
-          <div className="pr-6 pt-6">
-            <ul>
+          {/* Legal Links */}
+          <div className="flex flex-col md:items-start lg:items-center md:w-1/4  lg:items-star lg:w-1/3">
+            <ul className="space-y-2">
               <li>Terms</li>
-              <li>Privacy policy</li>
-              <li>Legal notice</li>
+              <li>Privacy Policy</li>
+              <li>Legal Notice</li>
               <li>Accessibility</li>
             </ul>
           </div>
-          <div>
-            <h2>Subscribe to the newslatter</h2>
-            <div className="relative items-center flex">
+          {/* Newsletter Subscription */}
+          <div className="flex flex-col lg:items-star lg:w-1/3 md:items-start md:w-full md:max-w-xs ">
+            <h2 className="mb-4">Subscribe to the newsletter</h2>
+            <div className="relative w-full max-w-sm flex">
               <input
                 className="w-full border-[2px] border-blue-200 p-2 rounded-lg focus:outline-none"
                 type="text"
                 placeholder="Email..."
               />
-              <button className="absolute right-2 bg-blue-600 text-white rounded-lg p-1 hover:scale-110 transition-all">
+              <button className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-600 text-white rounded-lg p-1 hover:scale-110 transition-all">
                 <FaArrowRight className="text-xl" />
               </button>
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-1 justify-center p-3 pb-4">
+        {/* Footer Bottom Section */}
+        <div className="flex flex-col lg:flex-row items-center gap-1 justify-center p-3 mt-4">
           <LuCopyright />
-          <p>copyright RENT, All Rights Reserved</p>
+          <p className="text-center lg:text-left">
+            © RENT, All Rights Reserved
+          </p>
         </div>
       </div>
     </footer>

@@ -16,6 +16,9 @@ import ManageBookingsPage from "../pages/adminDashboard/ManageBookingsPage";
 import ManageReturnCarPage from "../pages/adminDashboard/ManageReturnCarPage";
 import ManageUser from "../pages/adminDashboard/ManageUser";
 import BookingPage from "../pages/BookingPage";
+import PaymentManagementPage from "../pages/userDashboard/PaymentManagementPage";
+import ProtectedRoute from "../layouts/ProtectedRoute";
+import ErrorPage from "../pages/Errorpage";
 
 const Router = createBrowserRouter([
   {
@@ -25,11 +28,20 @@ const Router = createBrowserRouter([
       { path: "/", element: <HomePage /> },
       { path: "/aboutUs", element: <AboutUsPage /> },
       { path: "/car-listing", element: <CarListingPage /> },
-      { path: "/car/:id", element: <CarDetailsPage /> },
+      { path: "/cars/:id", element: <CarDetailsPage /> },
       { path: "/signIn", element: <SignInPage /> },
       { path: "/signUp", element: <SignUpPage /> },
-      { path: "/booking", element: <BookingPage /> },
+      {
+        path: "/booking",
+        element: (
+          <ProtectedRoute>
+            <BookingPage />
+          </ProtectedRoute>
+        ),
+      },
+      // { path: "/booking", element: <BookingPage /> },
     ],
+    errorElement: <ErrorPage />,
   },
   {
     path: "/dashboard",
@@ -62,6 +74,10 @@ const Router = createBrowserRouter([
       {
         path: "manageUser",
         element: <ManageUser />,
+      },
+      {
+        path: "payment",
+        element: <PaymentManagementPage />,
       },
     ],
   },

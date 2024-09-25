@@ -1,38 +1,132 @@
-import React from "react";
+import React, { useState } from "react";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { useLoginMutation } from "../redux/features/auth/authApi";
+import { useAppDispatch } from "../redux/hooks";
+import { setUser } from "../redux/features/auth/authSlice";
+import { verifyToken } from "../utils/VerifyToken";
+import toast from "react-hot-toast";
 
-const SignInPage = () => {
+const SignInPage: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/";
+  const [login, { error }] = useLoginMutation();
+
+  const [loading, setLoading] = useState(false);
+
+  // Setup react-hook-form
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      email: "johndoe@example.com",
+      password: "password123",
+    },
+  });
+
+  // Function to handle form submission
+  const onSubmit = async (data) => {
+    setLoading(true); // Set loading to true before API call
+    // Show the loading toast and get the ID
+    const toastId = toast.loading("Processing...");
+    try {
+      const res = await login(data).unwrap(); // Unwrap the response to get the actual data
+      const user = verifyToken(res.data.token);
+      console.log(user?.role);
+      dispatch(setUser({ user: user, token: res.data.token }));
+      toast.success("Login successful! Redirecting...", { id: toastId });
+      navigate(from, { replace: true }); // Redirect to the previous page or default
+    } catch (err) {
+      console.error("Login failed:", err);
+      toast.error("Login failed. Please check your email and password.", {
+        id: toastId,
+      });
+    } finally {
+      setLoading(false); // Set loading to false after API call
+    }
+  };
+
+  const handleSignUpClick = () => {
+    navigate("/signUp");
+  };
+
+  const handleForgotPasswordClick = () => {
+    navigate("/forgot-password");
+  };
+
   return (
-    <div className="h-screen w-full flex items-center">
-      <div className="h-[60vh] w-[60%] bg-red-200 mx-auto items-center justify-center rounded-lg flex">
-        <div className="w-[60%] h-full bg-red-300 flex items-center justify-center text-center mx-auto">
-          <div className="">
-            <h3 className="text-lg font-semibold text-center py-2">Sign In</h3>
-            <form className="w-full px-20 space-y-3">
-              <input
-                className="p-2 rounded-lg w-full"
-                placeholder="Email..."
-                type="email"
-              />
-              <input
-                className="p-2 rounded-lg w-full"
-                placeholder="Password..."
-                type="password"
-              />
-              <button className="bg-gray-400 rounded-lg" type="submit">
-                Sign In
-              </button>
-            </form>
-            <a href="">Forget Password</a>
-          </div>
-        </div>
-        <div className="w-[40%] bg-red-400 h-full items-center justify-center text-center flex p-6">
+    <div className="h-screen flex items-center justify-center bg-gray-100 p-4">
+      <div className="w-full max-w-md bg-white shadow-lg rounded-lg p-6 space-y-4">
+        <h1 className="text-2xl font-semibold text-center mb-4">Sign In</h1>
+
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
-            <h3 className="text-2xl font-semibold">Hello and Welcome</h3>
-            <p>Enter your personal ditels and Start joruney with us</p>
-            <button className="bg-gray-400 rounded-lg" type="submit">
+            <input
+              {...register("email", {
+                required: "Email is required",
+                pattern: {
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/i,
+                  message: "Invalid email address",
+                },
+              })}
+              className="w-full p-2 border border-gray-300 rounded-lg"
+              placeholder="Email Address"
+              type="email"
+            />
+            {errors.email && (
+              <p className="text-red-500 text-sm">{errors.email.message}</p>
+            )}
+          </div>
+          <div>
+            <input
+              {...register("password", { required: "Password is required" })}
+              className="w-full p-2 border border-gray-300 rounded-lg"
+              placeholder="Password"
+              type="password"
+            />
+            {errors.password && (
+              <p className="text-red-500 text-sm">{errors.password.message}</p>
+            )}
+          </div>
+          {loading && <p className="text-blue-500 text-sm">Loading...</p>}
+          <div className="flex gap-3 flex-col">
+            <a
+              onClick={handleForgotPasswordClick}
+              className="text-blue-600 text-sm cursor-pointer"
+            >
+              Forgot Password?
+            </a>
+            <button
+              type="submit"
+              className="bg-blue-600 text-white font-medium px-4 py-2 rounded-lg"
+            >
               Sign In
             </button>
           </div>
+        </form>
+
+        <div className="text-center mt-4">
+          <p className="text-gray-600 text-sm">
+            Don’t have an account?{" "}
+            <a
+              onClick={handleSignUpClick}
+              className="text-blue-600 cursor-pointer"
+            >
+              Sign Up Instead
+            </a>
+          </p>
+          <p className="text-gray-600 text-sm mt-2 ">
+            <NavLink
+              to={"terms-and-conditions"}
+              className="text-blue-600 cursor-pointer"
+            >
+              Terms & Conditions
+            </NavLink>
+          </p>
         </div>
       </div>
     </div>

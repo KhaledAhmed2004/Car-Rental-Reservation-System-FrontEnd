@@ -1,45 +1,18 @@
-// import React from "react";
-// import { NavLink } from "react-router-dom";
-// import { motion, stagger } from "framer-motion";
-
-// // Array of navigation links for the menu.
-// const navigationLink = [
-//   { id: 1, to: "/", label: "Home" },
-//   { id: 2, to: "/aboutUs", label: "About Us" },
-//   { id: 3, to: "/booking", label: "Booking" },
-//   { id: 4, to: "/car-listing", label: "Car Listing" },
-// ];
-
-// const NavMenu = () => {
-//   return (
-//     <nav className="flex gap-4">
-//       {navigationLink.map((link) => (
-//         <ul key={link.id}>
-//           <motion.div
-//             initial={{ opacity: 0 }}
-//             whileInView={{ opacity: 1 }}
-//             //transition={}
-//           >
-//             <NavLink to={link.to}>{link.label}</NavLink>
-//           </motion.div>
-//         </ul>
-//       ))}
-//     </nav>
-//   );
-// };
-
-// export default NavMenu;
-
 import React from "react";
 import { NavLink } from "react-router-dom";
 import { motion } from "framer-motion";
 
 // Array of navigation links for the menu.
-const navigationLink = [
+const desktopLinks = [
   { id: 1, to: "/", label: "Home" },
   { id: 2, to: "/aboutUs", label: "About Us" },
   { id: 3, to: "/booking", label: "Booking" },
   { id: 4, to: "/car-listing", label: "Car Listing" },
+];
+
+const mobileLinks = [
+  { id: 1, to: "/dashboard/userOverview", label: "Overview" },
+  { id: 2, to: "https://www.aliyun.com", label: "Manage Booking" },
 ];
 
 const NavMenu = () => {
@@ -72,16 +45,57 @@ const NavMenu = () => {
 
   return (
     <motion.nav
-      className="flex gap-4"
+      className="flex flex-col md:flex-row gap-4 p-4 md:p-0"
       variants={containerVariants}
       initial="hidden"
       animate="show"
     >
-      {navigationLink.map((link) => (
-        <motion.ul key={link.id} variants={linkVariants}>
-          <NavLink to={link.to}>{link.label}</NavLink>
-        </motion.ul>
-      ))}
+      {/* Desktop Navigation Links */}
+      <div className="hidden md:flex flex-col md:flex-row gap-4">
+        {desktopLinks.map((link) => (
+          <motion.div key={link.id} variants={linkVariants}>
+            <NavLink
+              to={link.to}
+              className={({ isActive }) =>
+                isActive
+                  ? "block py-2 px-4 text-blue-700 font-medium underline underline-offset-2"
+                  : "block py-2 px-4 text-black hover:bg-gray-200 rounded-md"
+              }
+            >
+              {link.label}
+            </NavLink>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Mobile Navigation Links */}
+      <div className="md:hidden flex flex-col gap-4 bg-gray-200 p-4 rounded-lg">
+        {mobileLinks.map((link) => (
+          <motion.div key={link.id} variants={linkVariants}>
+            {link.to.startsWith("http") ? (
+              <a
+                href={link.to}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block py-2 px-4 text-black hover:bg-gray-200 rounded-md"
+              >
+                {link.label}
+              </a>
+            ) : (
+              <NavLink
+                to={link.to}
+                className={({ isActive }) =>
+                  isActive
+                    ? "block py-2 px-4 text-blue-700 font-medium underline underline-offset-2"
+                    : "block py-2 px-4 text-black hover:bg-gray-200 rounded-md"
+                }
+              >
+                {link.label}
+              </NavLink>
+            )}
+          </motion.div>
+        ))}
+      </div>
     </motion.nav>
   );
 };
