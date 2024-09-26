@@ -8,6 +8,7 @@ const desktopLinks = [
   { id: 2, to: "/aboutUs", label: "About Us" },
   { id: 3, to: "/booking", label: "Booking" },
   { id: 4, to: "/car-listing", label: "Car Listing" },
+  { id: 4, to: "/dashboard", label: "Dashboard" },
 ];
 
 const mobileLinks = [

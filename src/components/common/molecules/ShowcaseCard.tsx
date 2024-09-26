@@ -96,7 +96,7 @@ const ShowcaseCard = ({
             {/* <span className="text-gray-400 ">({ratingCount})</span> */}
           </div>
         </motion.div>
-        <motion.span
+        {/* <motion.span
           variants={topItemVariants}
           className={`p-1 px-2 ${
             status
@@ -104,7 +104,17 @@ const ShowcaseCard = ({
               : "bg-red-200 text-red-600 border-red-600"
           } font-medium rounded-lg text-xs`}
         >
-          {status ? "Available" : "Not Available"}
+          {status}
+        </motion.span> */}
+        <motion.span
+          variants={topItemVariants}
+          className={`p-1 px-2 ${
+            status === "available"
+              ? "bg-green-200 text-green-600 border-green-600"
+              : "bg-red-200 text-red-600 border-red-600"
+          } font-medium rounded-lg text-xs`}
+        >
+          {status}
         </motion.span>
       </motion.div>
       <div className="h-[185px]">

@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
-  Form,
-  Input,
   Button,
-  Select,
   Card,
   Typography,
   Row,
@@ -21,7 +18,7 @@ import { FaStar } from "react-icons/fa";
 import { GiCarDoor } from "react-icons/gi";
 import { TbCurrencyTaka, TbEngine } from "react-icons/tb";
 import PrimaryButton from "../components/common/atoms/PrimaryButton";
-import { IoSpeedometerOutline } from "react-icons/io5";
+import { IoCarSportOutline, IoSpeedometerOutline } from "react-icons/io5";
 import { BsFuelPumpDiesel } from "react-icons/bs";
 import { MdOutlineLuggage } from "react-icons/md";
 import { LuUsers } from "react-icons/lu";
@@ -30,156 +27,95 @@ import { useForm } from "react-hook-form";
 import { useGetAllCarsQuery } from "../redux/features/car/carApi";
 
 const { Title, Text } = Typography;
-const { Option } = Select;
 
 const BookingPage = () => {
-  // const { data: cars } = useGetAllCarsQuery();
+  // Options for additional features like GPS, Child Seat, and Insurance
+  const additionalFeaturesOptions = [
+    { id: "gps", label: "GPS" },
+    { id: "childSeat", label: "Child Seat" },
+    { id: "insurance", label: "Insurance" },
+  ];
 
-  // console.log(cars);
-  const { register, handleSubmit } = useForm();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  // Mutation hook for creating a booking
   const [createBooking, { isSuccess, error }] = useCreateBookingMutation();
-  // console.log(error);
 
+  // Selecting the car details from the Redux store
   const selectedCarFromViewDetiels = useAppSelector(
     (state) => state.car.selectedCar
   );
-  const carId = selectedCarFromViewDetiels?._id;
-  const [carType, setCarType] = useState("");
-  console.log(carType);
 
+  // Local state management
+  const [type, setType] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCar, setSelectedCar] = useState(null);
   const [bookingDetails, setBookingDetails] = useState(null);
   const [isBookingConfirmed, setIsBookingConfirmed] = useState(false);
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
-
+  const [filteredCars, setFilteredCars] = useState([]);
   const [additionalOptions, setAdditionalOptions] = useState({
     gps: false,
     childSeat: false,
   });
-  const { data: cars } = useGetAllCarsQuery(carType); // Fetch cars based on carType
-  console.log(cars);
 
+  // Fetching car data based on selected type
+  const { data: cars } = useGetAllCarsQuery({ type });
+
+  // Effect to update selected car when it changes in the Redux store
   useEffect(() => {
     if (selectedCarFromViewDetiels) {
       setSelectedCar(selectedCarFromViewDetiels);
     }
   }, [selectedCarFromViewDetiels]);
 
-  // const handleSearch = async (values) => {
-  //   console.log("Search Values:", values);
-  //   // Simulate searching for cars
-  //   await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  //   // Mock car data for search results
-  //   setBookingDetails([
-  //     {
-  //       id: 1,
-  //       image:
-  //         "https://i.ibb.co/JsYVGCv/Download-Hyundai-PNG-Image-for-Free.jpg",
-  //       description: "A comfortable SUV with leather seats and GPS.",
-  //       price: 50,
-  //     },
-  //     {
-  //       id: 2,
-  //       image: "https://via.placeholder.com/300",
-  //       description: "A compact sedan with good fuel efficiency.",
-  //       price: 30,
-  //     },
-  //   ]);
-  // };
-
+  // Handler for the "Book Now" button
   const handleBookNow = (car) => {
     setSelectedCar(car);
     setIsModalOpen(true);
   };
-
+  const [bookingData, setBookingData] = useState("");
+  console.log("bookigdata", bookingData);
+  // Function to handle confirmation of the booking
   const handleModalOk = async (data) => {
-    const bookingData = {
-      carId: selectedCar?._id,
-      additionalOptions: additionalOptions,
-      ...data,
-    };
+    // const bookingData = {
+    //   carId: selectedCar?._id,
+    //   additionalOptions: additionalOptions,
+    //   ...data,
+    // };
     console.log(data);
-    // await useCreateBookingMutation(data);
-    await createBooking(data);
-    message.success("Booking confirmed!");
+    setBookingData({ carId: selectedCar?._id, ...data });
+    // Creating the booking
+    // await createBooking(data);
+    // message.success("Booking confirmed!");
     setIsBookingConfirmed(true);
     setIsModalOpen(false);
     setIsConfirmationModalOpen(true);
   };
-  const [filteredCars, setFilteredCars] = useState([]);
 
+  // Function to close the booking modal
   const handleModalCancel = () => {
     setIsModalOpen(false);
   };
 
-  const handleConfirmationModalClose = () => {
+  // Function to close the confirmation modal and show success message
+  const handleConfirmationModalClose = async () => {
     setIsConfirmationModalOpen(false);
-    message.success("Enjoy your ride!");
-  };
-  const topContainerVariants = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.3, // Delay between each child animation
-      },
-    },
-  };
-  const topItemVariants = {
-    hidden: { y: -20, opacity: 0 },
-    show: { y: 0, opacity: 1 },
+    await createBooking(data);
+    message.success("Booking confirmed! Enjoy your ride!");
+    // message.success("Enjoy your ride!");
   };
 
-  // Define animation variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.3, // Delay between children
-      },
-    },
-  };
+  // Fetching car data based on selected type, with skip if type is not set
+  const { data, isFetching } = useGetAllCarsQuery({ type }, { skip: !type });
 
-  const itemVariants = {
-    hidden: { y: -20, opacity: 0 },
-    show: { y: 0, opacity: 1 },
-  };
-
-  const bottomContainerVariants = {
-    hidden: { opacity: 0, y: -20 },
-    show: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        staggerChildren: 0.3, // Stagger effect for children
-      },
-    },
-  };
-
-  const bottomItemVariants = {
-    hidden: { opacity: 0, y: -10 },
-    show: { opacity: 1, y: 0 },
-  };
-  // const { register, handleSubmit } = useForm();
-
-  // const handleSearch = (data) => {
-  //   const { pickupLocation, dropOffLocation, carType } = data;
-  //   console.log(carType);
-  //   const filtered = cars?.filter((car) => {
-  //     const matchesCarType = carType ? car.carType === carType : true;
-  //     return matchesCarType; // Add other conditions if required
-  //   });
-  //   setFilteredCars(filtered || []); // Store the filtered cars
-  //   console.log(filtered);
-  // };
+  // Function to handle search by car type
   const handleSearch = (data) => {
-    // setCarType(data.carType);
-    console.log(data.carType);
-
-    // Set car type based on search
+    setType(data.type);
   };
   return (
     <div className="p-6 max-w-6xl mx-auto min-h-screen">
@@ -194,42 +130,70 @@ const BookingPage = () => {
               <div>
                 <label>Pick-Up Location</label>
                 <input
-                  {...register("pickupLocation", { required: true })}
+                  {...register("pickupLocation", {
+                    required: "Pick-Up Location is required",
+                  })}
                   placeholder="Enter location"
                   className="w-full p-2 border border-gray-300 rounded"
                 />
+                {errors.pickupLocation && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.pickupLocation.message}
+                  </p>
+                )}
               </div>
             </Col>
             <Col span={12}>
               <div>
                 <label>Drop-Off Location</label>
                 <input
-                  {...register("dropOffLocation", { required: true })}
+                  {...register("dropOffLocation", {
+                    required: "Drop-Off Location is required",
+                  })}
                   placeholder="Enter location"
                   className="w-full p-2 border border-gray-300 rounded"
                 />
+                {errors.dropOffLocation && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors?.dropOffLocation?.message}
+                  </p>
+                )}
               </div>
             </Col>
           </Row>
           <div>
             <label>Car Type</label>
             <select
-              {...register("carType", { required: true })} // Correct usage
+              {...register("type", { required: "Car Type is required" })}
               className="w-full p-2 border border-gray-300 rounded"
             >
               <option value="">Select car type</option>
-              <option value="suv">SUV</option>
+              <option value="SUV">SUV</option>
               <option value="sedan">Sedan</option>
               <option value="hatchback">Hatchback</option>
             </select>
+            {errors.carType && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.carType.message}
+              </p>
+            )}
           </div>
           <div>
             <label>Additional Features</label>
-            <input
-              {...register("additionalFeatures")}
-              placeholder="Enter features (e.g., GPS, child seat)"
-              className="w-full p-2 border border-gray-300 rounded"
-            />
+            <div className="space-y-2">
+              {additionalFeaturesOptions.map((feature) => (
+                <div key={feature.id}>
+                  <label>
+                    <input
+                      type="checkbox"
+                      value={feature.id}
+                      {...register("additionalFeatures")}
+                    />
+                    {feature.label}
+                  </label>
+                </div>
+              ))}
+            </div>
           </div>
           <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>
             Search
@@ -238,129 +202,7 @@ const BookingPage = () => {
       </div>
 
       {/* If there's a selected car from Redux, show it as a default */}
-      {selectedCar && (
-        <div className="bg-white h-fit rounded-lg overflow-hidden p-4">
-          <motion.div
-            variants={topContainerVariants}
-            initial="hidden"
-            animate="show"
-            className="flex items-center gap-2"
-          >
-            <motion.div
-              variants={topItemVariants}
-              className="flex items-center gap-1 border-[2px] px-2 py-1 w-fit rounded-lg"
-            >
-              <FaStar className="text-yellow-500" />
-              <div className="flex text-xs">
-                <span className="font-semibold">{selectedCar?.rating}</span>
-                {/* <span className="text-gray-400 ">({ratingCount})</span> */}
-              </div>
-            </motion.div>
-            <motion.span
-              variants={topItemVariants}
-              className={`p-1 px-2 ${
-                status
-                  ? "bg-green-200 text-green-600 border-green-600"
-                  : "bg-red-200 text-red-600 border-red-600"
-              } font-medium rounded-lg text-xs`}
-            >
-              {status ? "Available" : "Not Available"}
-            </motion.span>
-          </motion.div>
-          <div className="h-[185px]">
-            <div
-              className="h-full bg-contain bg-no-repeat bg-center rounded-lg"
-              style={{ backgroundImage: `url(${selectedCar?.images[0]})` }}
-            ></div>
-          </div>
-          <motion.div
-            initial={{ y: -100, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            className="px-2"
-          >
-            <h3 className="font-semibold text-xs text-gray-500">
-              {selectedCar?.carType}
-            </h3>
-            <h4 className="font-semibold text-lg">
-              {selectedCar?.brand} {selectedCar?.model}
-            </h4>
-          </motion.div>
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="show"
-            className="grid grid-cols-3 items-center justify-center p-2"
-          >
-            <motion.div
-              variants={itemVariants}
-              className="flex items-center gap-1 text-blue-500"
-            >
-              <LuUsers />
-              <p className="font-medium">{selectedCar?.seats} Persons</p>
-            </motion.div>
-            <motion.div
-              variants={itemVariants}
-              className="flex items-center gap-1 text-blue-500 justify-center"
-            >
-              <TbEngine />
-              <p className="font-medium">{selectedCar?.transmission}</p>
-            </motion.div>
-            <motion.div
-              variants={itemVariants}
-              className="flex items-center justify-center gap-1 text-blue-500"
-            >
-              <MdOutlineLuggage />
-              <p className="font-medium">{selectedCar?.luggageCapacity} Bags</p>
-            </motion.div>
-            <motion.div
-              variants={itemVariants}
-              className="flex items-center gap-1 text-blue-500"
-            >
-              <BsFuelPumpDiesel />
-              <p className="font-medium">{selectedCar?.fuelType}</p>
-            </motion.div>
-            <motion.div
-              variants={itemVariants}
-              className="flex items-center gap-1 text-blue-500 justify-center"
-            >
-              <IoSpeedometerOutline />
-              <p className="font-medium">{selectedCar?.mileage} km/h</p>
-            </motion.div>
-            <motion.div
-              variants={itemVariants}
-              className="flex items-center gap-1 justify-center text-blue-500"
-            >
-              <GiCarDoor />
-              <p className="font-medium">{selectedCar?.doors} Doors</p>
-            </motion.div>
-          </motion.div>
-          <motion.div
-            variants={bottomContainerVariants}
-            initial="hidden"
-            animate="show"
-            className="flex justify-between border-t-2 bg-green-70 pt-2 px-2"
-          >
-            <motion.div
-              variants={bottomItemVariants}
-              className="flex items-center"
-            >
-              <TbCurrencyTaka className="text-2xl" />
-              <h3 className="font-semibold">
-                {selectedCar?.pricePerHour}/{" "}
-                <span className="text-gray-400 font-medium">hour</span>
-              </h3>
-            </motion.div>
-            <motion.div className="pt-2" variants={bottomItemVariants}>
-              {/* <PrimaryButton label="View Details" onClick={handleViewDetails} /> */}
-              <PrimaryButton
-                label="Book Now"
-                onClick={() => handleBookNow(selectedCar)}
-              />
-            </motion.div>
-          </motion.div>
-        </div>
-      )}
+      {selectedCar && <CarCard car={selectedCar} onBookNow={handleBookNow} />}
 
       {/* Search Results */}
       {bookingDetails && (
@@ -402,15 +244,83 @@ const BookingPage = () => {
           <Title level={4} className="text-green-600 mb-4">
             Booking Details
           </Title>
-          <Card
+          {/* <Card
             cover={<Image alt="Selected Car" src={selectedCar?.images[0]} />}
           >
-            <Card.Meta
-              title={`$${selectedCar?.pricePerHour} / day`}
-              description={selectedCar?.description}
-            />
+            <div className="md:w-1/2 space-y-6">
+              <div className="bg-white p-4 rounded-lg shadow-md">
+                <h2 className="text-2xl font-semibold mb-2">
+                  {selectedCar.brand} {selectedCar.model}
+                </h2>
+                <div className="flex items-center gap-1">
+                  <TbCurrencyTaka className="text-2xl" />
+                  <p className="font-semibold">Price :</p>
+                  {selectedCar.pricePerHour}
+                </div>
+                <div className="flex items-center gap-1">
+                  <IoCarSportOutline className="text-2xl" />
+                  <p className="font-semibold">Name :</p>
+                  {selectedCar.brand} {selectedCar.model}
+                </div>
+                <div className="flex items-center gap-1">
+                  <p className="font-semibold">Availability :</p>
+                  <span className="text-green-800 font-semibold">
+                    {selectedCar.status}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <p className="font-semibold">Color :</p>
+                  <span className="text-green-800 font-semibold">
+                    {selectedCar.color}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <p className="font-semibold">Transmission :</p>
+                  <span className="text-green-800 font-semibold">
+                    {selectedCar.transmission}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <p className="font-semibold">Fuel Type :</p>
+                  <span className="text-green-800 font-semibold">
+                    {selectedCar.fuelType}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <p className="font-semibold">Bags :</p>
+                  <span className="text-green-800 font-semibold">
+                    {selectedCar.luggageCapacity}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <p className="font-semibold">Door :</p>
+                  <span className="text-green-800 font-semibold">
+                    {selectedCar.doors}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <p className="font-semibold">Mileage :</p>
+                  <span className="text-green-800 font-semibold">
+                    {selectedCar.mileage}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <p className="font-semibold">Capacity :</p>
+                  <span className="text-green-800 font-semibold">
+                    {selectedCar.seats}
+                  </span>
+                </div>
+
+                <h3 className="text-lg font-semibold mt-4">Features:</h3>
+                <ul className="list-disc list-inside space-y-1">
+                  {selectedCar.features?.map((feature, index) => (
+                    <li key={index}>{feature}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
           </Card>
-          <Divider />
+          <Divider /> */}
           <form
             onSubmit={handleSubmit(handleModalOk)}
             className="bg-white p-6 rounded-lg shadow-md space-y-4"
@@ -466,49 +376,415 @@ const BookingPage = () => {
             </div>
 
             <Button type="primary" htmlType="submit" className="w-full">
-              Confirm Booking
+              Go Next
             </Button>
           </form>
         </Modal>
       )}
+      {/* Display cars */}
+      {isFetching ? (
+        <p>Loading...</p>
+      ) : (
+        cars && (
+          <div className="grid grid-cols-3 gap-2 ">
+            {data?.data?.map((car) => (
+              <CarCard key={car.id} car={car} onBookNow={handleBookNow} />
+            ))}
+          </div>
+        )
+      )}
 
       {/* Booking Confirmation Modal */}
-      <Modal
+      {/* <Modal
         title="Booking Confirmed!"
         visible={isConfirmationModalOpen}
         onOk={handleConfirmationModalClose}
         onCancel={handleConfirmationModalClose}
         footer={null}
+        className="custom-modal" // Optional: Add a custom class for additional styling
       >
-        <div className="mt-8 bg-green-100 p-6 rounded-lg shadow-lg">
-          <Title level={4} className="text-green-600 mb-4">
+        <div className="bg-white p-6 rounded-lg ">
+          <Title level={4} className="text-green-600 text-center mb-6">
             Booking Details
           </Title>
+
           {selectedCar && (
             <Card
-              cover={<Image alt="Confirmed Car" src={selectedCar?.images[0]} />}
+              cover={
+                <Image
+                  alt="Selected Car"
+                  src={selectedCar?.images[0]}
+                  className="rounded-lg"
+                />
+              }
+              className="mb-4"
             >
-              <Card.Meta
-                title={`$${selectedCar?.pricePerHour} / day`}
-                description={selectedCar?.description}
-              />
+              <div className="p-4 space-y-2">
+                <h2 className="text-2xl font-semibold text-center">
+                  {selectedCar.brand} {selectedCar.model}
+                </h2>
+                <div className="flex justify-between">
+                  <p className="font-semibold">Price:</p>
+                  <p className="text-green-800">
+                    ${selectedCar.pricePerHour}/hour
+                  </p>
+                </div>
+                <div className="flex justify-between">
+                  <p className="font-semibold">Availability:</p>
+                  <p className="text-green-800">{selectedCar.status}</p>
+                </div>
+                <div className="flex justify-between">
+                  <p className="font-semibold">Color:</p>
+                  <p className="text-green-800">{selectedCar.color}</p>
+                </div>
+                <div className="flex items-center gap-1">
+                  <p className="font-semibold">Transmission :</p>
+                  <span className="text-green-800 font-semibold">
+                    {selectedCar.transmission}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <p className="font-semibold">Fuel Type :</p>
+                  <span className="text-green-800 font-semibold">
+                    {selectedCar.fuelType}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <p className="font-semibold">Bags :</p>
+                  <span className="text-green-800 font-semibold">
+                    {selectedCar.luggageCapacity}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <p className="font-semibold">Door :</p>
+                  <span className="text-green-800 font-semibold">
+                    {selectedCar.doors}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <p className="font-semibold">Mileage :</p>
+                  <span className="text-green-800 font-semibold">
+                    {selectedCar.mileage}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <p className="font-semibold">Capacity :</p>
+                  <span className="text-green-800 font-semibold">
+                    {selectedCar.seats}
+                  </span>
+                </div>
+                <h3 className="text-lg font-semibold mt-4">Features:</h3>
+                <ul className="list-disc list-inside space-y-1">
+                  {selectedCar.features?.map((feature, index) => (
+                    <li key={index} className="text-left">
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </Card>
           )}
+
           <Divider />
+
           <div className="mb-4">
             <Text strong>Selected Options:</Text>
-            <List>
+            <List size="small">
               <List.Item>GPS: {additionalOptions.gps ? "Yes" : "No"}</List.Item>
               <List.Item>
                 Child Seat: {additionalOptions.childSeat ? "Yes" : "No"}
               </List.Item>
             </List>
           </div>
-          <Button type="primary" block onClick={handleConfirmationModalClose}>
-            Done
+
+          <Button
+            type="primary"
+            block
+            onClick={handleConfirmationModalClose}
+            className="transition-colors duration-300"
+          >
+            Confirm Booking
+          </Button>
+        </div>
+      </Modal> */}
+      <Modal
+        title="Booking Confirmed!"
+        visible={isConfirmationModalOpen}
+        onOk={handleConfirmationModalClose}
+        onCancel={handleConfirmationModalClose}
+        footer={null}
+        className="custom-modal" // Optional: Add a custom class for additional styling
+      >
+        <div className="bg-white p-6 rounded-lg shadow-lg">
+          <Title level={4} className="text-green-600 text-center mb-4">
+            Booking Details
+          </Title>
+
+          {selectedCar && (
+            <Card
+              cover={
+                <Image
+                  alt="Selected Car"
+                  src={selectedCar.images[0]}
+                  className="rounded-lg"
+                />
+              }
+              className="mb-4"
+            >
+              <div className="p-4 space-y-2">
+                <h2 className="text-2xl font-semibold text-center">
+                  {selectedCar.brand} {selectedCar.model}
+                </h2>
+                <div className="flex justify-between">
+                  <p className="font-semibold">Price:</p>
+                  <p className="text-green-800">
+                    ${selectedCar.pricePerHour}/hour
+                  </p>
+                </div>
+                <div className="flex justify-between">
+                  <p className="font-semibold">Availability:</p>
+                  <p className="text-green-800">{selectedCar.status}</p>
+                </div>
+                <div className="flex justify-between">
+                  <p className="font-semibold">Color:</p>
+                  <p className="text-green-800">{selectedCar.color}</p>
+                </div>
+                <div className="flex justify-between">
+                  <p className="font-semibold">Transmission:</p>
+                  <p className="text-green-800">{selectedCar.transmission}</p>
+                </div>
+                <div className="flex justify-between">
+                  <p className="font-semibold">Fuel Type:</p>
+                  <p className="text-green-800">{selectedCar.fuelType}</p>
+                </div>
+                <div className="flex justify-between">
+                  <p className="font-semibold">Bags:</p>
+                  <p className="text-green-800">
+                    {selectedCar.luggageCapacity}
+                  </p>
+                </div>
+                <div className="flex justify-between">
+                  <p className="font-semibold">Doors:</p>
+                  <p className="text-green-800">{selectedCar.doors}</p>
+                </div>
+                <div className="flex justify-between">
+                  <p className="font-semibold">Mileage:</p>
+                  <p className="text-green-800">{selectedCar.mileage}</p>
+                </div>
+                <div className="flex justify-between">
+                  <p className="font-semibold">Capacity:</p>
+                  <p className="text-green-800">{selectedCar.seats}</p>
+                </div>
+                <h3 className="text-lg font-semibold mt-4">Features:</h3>
+                <ul className="list-disc list-inside space-y-1">
+                  {selectedCar.features?.map((feature, index) => (
+                    <li key={index} className="text-left">
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </Card>
+          )}
+
+          <Divider />
+
+          <div className="mb-4">
+            <Text strong>Selected Options:</Text>
+            <List size="small">
+              <List.Item>GPS: {additionalOptions.gps ? "Yes" : "No"}</List.Item>
+              <List.Item>
+                Child Seat: {additionalOptions.childSeat ? "Yes" : "No"}
+              </List.Item>
+            </List>
+          </div>
+
+          <Button
+            type="primary"
+            block
+            onClick={handleConfirmationModalClose}
+            className="transition-colors duration-300"
+          >
+            Confirm Booking
           </Button>
         </div>
       </Modal>
+    </div>
+  );
+};
+
+const CarCard = ({ car, onBookNow }) => {
+  // Animation variants for the top container
+  const topContainerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.3,
+      },
+    },
+  };
+  const topItemVariants = {
+    hidden: { y: -20, opacity: 0 },
+    show: { y: 0, opacity: 1 },
+  };
+
+  // Define animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.3,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { y: -20, opacity: 0 },
+    show: { y: 0, opacity: 1 },
+  };
+
+  const bottomContainerVariants = {
+    hidden: { opacity: 0, y: -20 },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        staggerChildren: 0.3, // Stagger effect for children
+      },
+    },
+  };
+
+  const bottomItemVariants = {
+    hidden: { opacity: 0, y: -10 },
+    show: { opacity: 1, y: 0 },
+  };
+  const {
+    rating,
+    images,
+    carType,
+    brand,
+    model,
+    seats,
+    transmission,
+    luggageCapacity,
+    fuelType,
+    mileage,
+    doors,
+    pricePerHour,
+    status,
+  } = car;
+
+  return (
+    <div className="bg-white h-fit rounded-lg overflow-hidden p-4">
+      <motion.div
+        variants={topContainerVariants}
+        initial="hidden"
+        animate="show"
+        className="flex items-center gap-2"
+      >
+        <motion.div
+          variants={topItemVariants}
+          className="flex items-center gap-1 border-[2px] px-2 py-1 w-fit rounded-lg"
+        >
+          <FaStar className="text-yellow-500" />
+          <div className="flex text-xs">
+            <span className="font-semibold">{rating}</span>
+          </div>
+        </motion.div>
+        <motion.span
+          variants={topItemVariants}
+          className={`p-1 px-2 ${
+            status
+              ? "bg-green-200 text-green-600 border-green-600"
+              : "bg-red-200 text-red-600 border-red-600"
+          } font-medium rounded-lg text-xs`}
+        >
+          {status ? "Available" : "Not Available"}
+        </motion.span>
+      </motion.div>
+      <div className="h-[185px]">
+        <div
+          className="h-full bg-contain bg-no-repeat bg-center rounded-lg"
+          style={{ backgroundImage: `url(${images[0]})` }}
+        ></div>
+      </div>
+      <motion.div
+        initial={{ y: -100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        className="px-2"
+      >
+        <h3 className="font-semibold text-xs text-gray-500">{carType}</h3>
+        <h4 className="font-semibold text-lg">{`${brand} ${model}`}</h4>
+      </motion.div>
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="show"
+        className="grid grid-cols-3 items-center justify-center p-2"
+      >
+        <motion.div
+          variants={itemVariants}
+          className="flex items-center gap-1 text-blue-500"
+        >
+          <LuUsers />
+          <p className="font-medium">{seats} Persons</p>
+        </motion.div>
+        <motion.div
+          variants={itemVariants}
+          className="flex items-center gap-1 text-blue-500 justify-center"
+        >
+          <TbEngine />
+          <p className="font-medium">{transmission}</p>
+        </motion.div>
+        <motion.div
+          variants={itemVariants}
+          className="flex items-center justify-center gap-1 text-blue-500"
+        >
+          <MdOutlineLuggage />
+          <p className="font-medium">{luggageCapacity} Bags</p>
+        </motion.div>
+        <motion.div
+          variants={itemVariants}
+          className="flex items-center gap-1 text-blue-500"
+        >
+          <BsFuelPumpDiesel />
+          <p className="font-medium">{fuelType}</p>
+        </motion.div>
+        <motion.div
+          variants={itemVariants}
+          className="flex items-center gap-1 text-blue-500 justify-center"
+        >
+          <IoSpeedometerOutline />
+          <p className="font-medium">{mileage} km/h</p>
+        </motion.div>
+        <motion.div
+          variants={itemVariants}
+          className="flex items-center gap-1 justify-center text-blue-500"
+        >
+          <GiCarDoor />
+          <p className="font-medium">{doors} Doors</p>
+        </motion.div>
+      </motion.div>
+      <motion.div
+        variants={bottomContainerVariants}
+        initial="hidden"
+        animate="show"
+        className="flex justify-between border-t-2 bg-green-70 pt-2 px-2"
+      >
+        <motion.div variants={bottomItemVariants} className="flex items-center">
+          <TbCurrencyTaka className="text-2xl" />
+          <h3 className="font-semibold">
+            {pricePerHour}/
+            <span className="text-gray-400 font-medium">hour</span>
+          </h3>
+        </motion.div>
+        <motion.div className="pt-2" variants={bottomItemVariants}>
+          <PrimaryButton label="Book Now" onClick={() => onBookNow(car)} />
+        </motion.div>
+      </motion.div>
     </div>
   );
 };
