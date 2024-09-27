@@ -1,43 +1,72 @@
 import { Table, Tag, Button, message, Modal } from "antd";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { MdOutlineCancel } from "react-icons/md";
 import { TiTickOutline } from "react-icons/ti";
+import {
+  useGetAllBookingsQuery,
+  useUpdateBookingStatusMutation,
+} from "../../redux/features/booking/bookingApi";
 
 const ManageBookingsPage = () => {
+  const { data, error, isLoading } = useGetAllBookingsQuery();
+  const [updateBookingStatus] = useUpdateBookingStatusMutation();
+
+  console.log("Booking data:", data?.data);
+
   // State to manage the bookings data
-  const [bookings, setBookings] = useState([
-    {
-      key: "1",
-      carModel: "Tesla Model S",
-      userName: "Mike",
-      returnDate: "2023-09-20",
-      bookingDates: "2023-09-10 to 2023-09-15",
-      price: "$500",
-      status: "Pending",
-    },
-    {
-      key: "2",
-      carModel: "Audi A4",
-      userName: "John",
-      returnDate: "2023-09-22",
-      bookingDates: "2023-09-12 to 2023-09-18",
-      price: "$300",
-      status: "Confirmed",
-    },
-  ]);
+  const [bookings, setBookings] = useState([]);
+
+  // Effect to set bookings once data is fetched
+  useEffect(() => {
+    if (data?.data) {
+      // Map the booking data to match the required format
+      const formattedBookings = data.data.map((booking) => ({
+        key: booking._id, // unique key for the table
+        carModel: `${booking.carId?.brand || "Unknown"} ${
+          booking.carId?.model || "Unknown"
+        }`, // Combine brand and model
+        userName: booking.userId?.name || "Unknown", // assuming userId has name field
+        rentalDates: `${booking.date} in ${booking.startTime}`, // format rental dates
+        pricePerHour: `$${booking.carId?.pricePerHour || "0"}`, // format price per hour
+        status: booking.status, // Assuming this is a string like 'Pending', 'Confirmed', 'Canceled'
+      }));
+      setBookings(formattedBookings);
+    }
+  }, [data]);
 
   // Function to handle approving a booking with confirmation
+  // const handleApprove = (record) => {
+  //   Modal.confirm({
+  //     title: "Are you sure you want to approve this booking?",
+  //     onOk: () => {
+  //       const updatedBookings = bookings.map((booking) =>
+  //         booking.key === record.key
+  //           ? { ...booking, status: "Confirmed" }
+  //           : booking
+  //       );
+  //       setBookings(updatedBookings);
+  //       message.success("Booking approved successfully.");
+  //     },
+  //   });
+  // };
   const handleApprove = (record) => {
     Modal.confirm({
       title: "Are you sure you want to approve this booking?",
-      onOk: () => {
-        const updatedBookings = bookings.map((booking) =>
-          booking.key === record.key
-            ? { ...booking, status: "Confirmed" }
-            : booking
-        );
-        setBookings(updatedBookings);
-        message.success("Booking approved successfully.");
+      onOk: async () => {
+        try {
+          // Call the backend API to update the booking status
+          await updateBookingStatus({ id: record.key, status: "confirmed" });
+
+          const updatedBookings = bookings.map((booking) =>
+            booking.key === record.key
+              ? { ...booking, status: "Confirmed" }
+              : booking
+          );
+          setBookings(updatedBookings);
+          message.success("Booking approved successfully.");
+        } catch (error) {
+          message.error("Failed to approve the booking.");
+        }
       },
     });
   };
@@ -76,14 +105,14 @@ const ManageBookingsPage = () => {
       key: "userName",
     },
     {
-      title: "Booking Dates",
-      dataIndex: "bookingDates",
-      key: "bookingDates",
+      title: "Rental Dates",
+      dataIndex: "rentalDates",
+      key: "rentalDates",
     },
     {
-      title: "Price",
-      dataIndex: "price",
-      key: "price",
+      title: "Price Per Hour",
+      dataIndex: "pricePerHour",
+      key: "pricePerHour",
     },
     {
       title: "Status",
@@ -96,7 +125,7 @@ const ManageBookingsPage = () => {
             ? "green"
             : status === "Canceled"
             ? "red"
-            : "orange";
+            : "orange"; // Assuming "Pending" will fall under orange
         return <Tag color={color}>{status}</Tag>;
       },
     },
@@ -108,7 +137,7 @@ const ManageBookingsPage = () => {
         return (
           <div className="flex gap-2">
             {/* Show approve button only if status is Pending */}
-            {record.status === "Pending" && (
+            {record.status === "pending" && (
               <Button
                 type="primary"
                 onClick={() => handleApprove(record)}
@@ -119,7 +148,7 @@ const ManageBookingsPage = () => {
               </Button>
             )}
             {/* Disable cancel button if the status is Confirmed or already Canceled */}
-            {record.status !== "Canceled" && record.status !== "Confirmed" && (
+            {record.status !== "Canceled" && record.status !== "confirmed" && (
               <Button
                 type="danger"
                 onClick={() => handleCancel(record)}
@@ -134,6 +163,10 @@ const ManageBookingsPage = () => {
       },
     },
   ];
+
+  // Handle loading state
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error loading bookings</div>;
 
   return (
     <div>
