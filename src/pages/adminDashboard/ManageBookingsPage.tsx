@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { MdOutlineCancel } from "react-icons/md";
 import { TiTickOutline } from "react-icons/ti";
 import {
+  useDeleteBookingMutation,
   useGetAllBookingsQuery,
   useUpdateBookingStatusMutation,
 } from "../../redux/features/booking/bookingApi";
@@ -10,6 +11,7 @@ import {
 const ManageBookingsPage = () => {
   const { data, error, isLoading } = useGetAllBookingsQuery();
   const [updateBookingStatus] = useUpdateBookingStatusMutation();
+  const [deleteBooking] = useDeleteBookingMutation();
 
   console.log("Booking data:", data?.data);
 
@@ -35,20 +37,6 @@ const ManageBookingsPage = () => {
   }, [data]);
 
   // Function to handle approving a booking with confirmation
-  // const handleApprove = (record) => {
-  //   Modal.confirm({
-  //     title: "Are you sure you want to approve this booking?",
-  //     onOk: () => {
-  //       const updatedBookings = bookings.map((booking) =>
-  //         booking.key === record.key
-  //           ? { ...booking, status: "Confirmed" }
-  //           : booking
-  //       );
-  //       setBookings(updatedBookings);
-  //       message.success("Booking approved successfully.");
-  //     },
-  //   });
-  // };
   const handleApprove = (record) => {
     Modal.confirm({
       title: "Are you sure you want to approve this booking?",
@@ -74,15 +62,18 @@ const ManageBookingsPage = () => {
   // Function to handle canceling a booking with confirmation
   const handleCancel = (record) => {
     Modal.confirm({
-      title: "Are you sure you want to cancel this booking?",
-      onOk: () => {
-        const updatedBookings = bookings.map((booking) =>
-          booking.key === record.key
-            ? { ...booking, status: "Canceled" }
-            : booking
-        );
-        setBookings(updatedBookings);
-        message.error("Booking canceled.");
+      title: "Are you sure you want to cancel and delete this booking?",
+      onOk: async () => {
+        try {
+          await deleteBooking({ id: record.key }); // <-- Call delete mutation
+          const updatedBookings = bookings.filter(
+            (booking) => booking.key !== record.key
+          );
+          setBookings(updatedBookings);
+          message.error("Booking canceled and deleted.");
+        } catch (error) {
+          message.error("Failed to delete the booking.");
+        }
       },
     });
   };
