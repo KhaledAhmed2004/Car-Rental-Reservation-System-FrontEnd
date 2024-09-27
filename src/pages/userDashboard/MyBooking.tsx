@@ -1,31 +1,31 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Table, Tag, Tabs, Modal, message } from "antd";
 import { AiOutlineDelete } from "react-icons/ai";
 import { MdOutlineMode } from "react-icons/md";
 import { useForm } from "react-hook-form";
-import { DatePicker, Space } from "antd";
+import { DatePicker } from "antd";
 import { useGetMyBookingsQuery } from "../../redux/features/booking/bookingApi";
 
 const MyBooking = () => {
-  // const { data: bookings, error, isLoading } = useGetMyBookingsQuery();
+  const { data, error, isLoading } = useGetMyBookingsQuery();
   const { RangePicker } = DatePicker;
 
-  const [bookings, setBookings] = useState([
-    {
-      key: "1",
-      carModel: "Toyota Corolla",
-      rentalDates: "01-05 May",
-      price: "$200",
-      status: "Pending",
-    },
-    {
-      key: "2",
-      carModel: "Honda Civic",
-      rentalDates: "10-15 June",
-      price: "$300",
-      status: "Confirmed",
-    },
-  ]);
+  // State for the bookings fetched from the backend
+  const [bookings, setBookings] = useState([]);
+
+  // Update bookings state with data from the backend when available
+  useEffect(() => {
+    if (data && data.data) {
+      const transformedBookings = data.data.map((booking) => ({
+        key: booking._id,
+        carModel: `${booking.carId.brand} ${booking.carId.model}`,
+        rentalDates: `${booking.date} ${booking.startTime}`,
+        price: `$${booking.carId.pricePerHour}/hour`,
+        status: booking.status,
+      }));
+      setBookings(transformedBookings);
+    }
+  }, [data]);
 
   // State for the modal visibility and current booking
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -58,7 +58,6 @@ const MyBooking = () => {
 
   // Handle form submission to update the booking
   const onSubmit = (values) => {
-    console.log(values);
     const updatedBookings = bookings.map((booking) =>
       booking.key === currentBooking.key ? { ...booking, ...values } : booking
     );
@@ -81,7 +80,7 @@ const MyBooking = () => {
       key: "rentalDates",
     },
     {
-      title: "Price",
+      title: "Price Per Hour",
       dataIndex: "price",
       key: "price",
     },
@@ -90,10 +89,37 @@ const MyBooking = () => {
       dataIndex: "status",
       key: "status",
       render: (status) => {
-        let color = status === "Confirmed" ? "green" : "blue";
+        let color = status === "confirmed" ? "green" : "blue";
         return <Tag color={color}>{status}</Tag>;
       },
     },
+    // {
+    //   title: "Action",
+    //   dataIndex: "action",
+    //   key: "action",
+    //   render: (_, record) => {
+    //     return (
+    //       <div className="flex gap-2">
+    //         {record.status !== "Confirmed" && (
+    //           <div
+    //             className="bg-gray-100 p-1 rounded-lg hover:scale-125 transition-all cursor-pointer"
+    //             onClick={() => handleCancel(record.key)}
+    //           >
+    //             <AiOutlineDelete className="text-xl" />
+    //           </div>
+    //         )}
+    //         {record.status !== "Confirmed" && (
+    //           <div
+    //             className="bg-gray-100 p-1 rounded-lg hover:scale-125 transition-all cursor-pointer"
+    //             onClick={() => handleModify(record.key)}
+    //           >
+    //             <MdOutlineMode className="text-xl" />
+    //           </div>
+    //         )}
+    //       </div>
+    //     );
+    //   },
+    // },
     {
       title: "Action",
       dataIndex: "action",
@@ -101,21 +127,22 @@ const MyBooking = () => {
       render: (_, record) => {
         return (
           <div className="flex gap-2">
-            {record.status !== "Confirmed" && (
-              <div
-                className="bg-gray-100 p-1 rounded-lg hover:scale-125 transition-all cursor-pointer"
-                onClick={() => handleCancel(record.key)}
-              >
-                <AiOutlineDelete className="text-xl" />
-              </div>
-            )}
-            {record.status !== "Confirmed" && (
-              <div
-                className="bg-gray-100 p-1 rounded-lg hover:scale-125 transition-all cursor-pointer"
-                onClick={() => handleModify(record.key)}
-              >
-                <MdOutlineMode className="text-xl" />
-              </div>
+            {/* Only show delete and modify buttons if the status is not 'Confirmed' */}
+            {record.status !== "confirmed" && (
+              <>
+                <div
+                  className="bg-gray-100 p-1 rounded-lg hover:scale-125 transition-all cursor-pointer"
+                  onClick={() => handleCancel(record.key)}
+                >
+                  <AiOutlineDelete className="text-xl" />
+                </div>
+                <div
+                  className="bg-gray-100 p-1 rounded-lg hover:scale-125 transition-all cursor-pointer"
+                  onClick={() => handleModify(record.key)}
+                >
+                  <MdOutlineMode className="text-xl" />
+                </div>
+              </>
             )}
           </div>
         );
@@ -183,16 +210,6 @@ const MyBooking = () => {
                   className="p-1 pl-2 outline-none border w-full rounded-md hover:border-blue-500"
                 />
               </div>
-              {/* <div>
-                <label>Rental Dates</label>
-                <input
-                  type="text"
-                  {...register("rentalDates", {
-                    required: "Please enter rental dates",
-                  })}
-                  className="p-1 pl-2 outline-none border w-full rounded-md hover:border-blue-500"
-                />
-              </div> */}
               <div>
                 <label>Rental Dates</label>
                 <RangePicker />

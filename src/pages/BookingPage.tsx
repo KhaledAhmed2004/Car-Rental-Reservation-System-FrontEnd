@@ -18,14 +18,14 @@ import { FaStar } from "react-icons/fa";
 import { GiCarDoor } from "react-icons/gi";
 import { TbCurrencyTaka, TbEngine } from "react-icons/tb";
 import PrimaryButton from "../components/common/atoms/PrimaryButton";
-import { IoCarSportOutline, IoSpeedometerOutline } from "react-icons/io5";
+import { IoSpeedometerOutline } from "react-icons/io5";
 import { BsFuelPumpDiesel } from "react-icons/bs";
 import { MdOutlineLuggage } from "react-icons/md";
 import { LuUsers } from "react-icons/lu";
 import { useCreateBookingMutation } from "../redux/features/booking/bookingApi";
 import { useForm } from "react-hook-form";
 import { useGetAllCarsQuery } from "../redux/features/car/carApi";
-import { user } from "../redux/features/auth/authSlice";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 const { Title, Text } = Typography;
 
@@ -43,6 +43,7 @@ const BookingPage = () => {
     formState: { errors },
   } = useForm();
 
+  const navigate = useNavigate(); // Initialize useNavigate
   // Mutation hook for creating a booking
   const [createBooking, { isSuccess, error }] = useCreateBookingMutation();
 
@@ -66,6 +67,8 @@ const BookingPage = () => {
 
   // Fetching car data based on selected type
   const { data: cars } = useGetAllCarsQuery({ type });
+
+  console.log(selectedCar);
 
   // Effect to update selected car when it changes in the Redux store
   useEffect(() => {
@@ -123,6 +126,7 @@ const BookingPage = () => {
     console.log(bookingData);
     await createBooking(bookingData);
     message.success("Booking confirmed! Enjoy your ride!");
+    navigate("/dashboard/myBookings");
   };
 
   // Fetching car data based on selected type, with skip if type is not set
@@ -146,16 +150,16 @@ const BookingPage = () => {
                 <label>Pick-Up Location</label>
                 <input
                   {...register("pickupLocation", {
-                    required: "Pick-Up Location is required",
+                    // required: "Pick-Up Location is required",
                   })}
                   placeholder="Enter location"
                   className="w-full p-2 border border-gray-300 rounded"
                 />
-                {errors.pickupLocation && (
+                {/* {errors.pickupLocation && (
                   <p className="text-red-500 text-sm mt-1">
                     {errors.pickupLocation.message}
                   </p>
-                )}
+                )} */}
               </div>
             </Col>
             <Col span={12}>
@@ -163,23 +167,26 @@ const BookingPage = () => {
                 <label>Drop-Off Location</label>
                 <input
                   {...register("dropOffLocation", {
-                    required: "Drop-Off Location is required",
+                    // required: "Drop-Off Location is required",
                   })}
                   placeholder="Enter location"
                   className="w-full p-2 border border-gray-300 rounded"
                 />
-                {errors.dropOffLocation && (
+                {/* {errors.dropOffLocation && (
                   <p className="text-red-500 text-sm mt-1">
                     {errors?.dropOffLocation?.message}
                   </p>
-                )}
+                )} */}
               </div>
             </Col>
           </Row>
           <div>
             <label>Car Type</label>
             <select
-              {...register("type", { required: "Car Type is required" })}
+              {...register(
+                "type"
+                //  { required: "Car Type is required" }
+              )}
               className="w-full p-2 border border-gray-300 rounded"
             >
               <option value="">Select car type</option>
@@ -187,11 +194,11 @@ const BookingPage = () => {
               <option value="sedan">Sedan</option>
               <option value="hatchback">Hatchback</option>
             </select>
-            {errors.carType && (
+            {/* {errors.carType && (
               <p className="text-red-500 text-sm mt-1">
                 {errors.carType.message}
               </p>
-            )}
+            )} */}
           </div>
           <div>
             <label>Additional Features</label>
