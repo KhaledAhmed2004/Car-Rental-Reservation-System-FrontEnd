@@ -1,172 +1,26 @@
-// import { Table, Tag } from "antd";
-// import React from "react";
-// import { AiOutlineDelete } from "react-icons/ai";
-// import { IoIosAddCircleOutline } from "react-icons/io";
-// import { MdOutlineMode } from "react-icons/md";
-// import { GiCarKey } from "react-icons/gi";
-
-// const ManageUser = () => {
-//   const dataSource = [
-//     {
-//       key: "1",
-//       name: "Mike",
-//       age: 32,
-//       address: "10 Downing Street",
-//       status: "On-Going",
-//     },
-//     {
-//       key: "2",
-//       name: "John",
-//       age: 42,
-//       address: "10 Downing Street",
-//       status: "Complated",
-//     },
-//     {
-//       key: "2",
-//       name: "John",
-//       age: 42,
-//       address: "10 Downing Street",
-//       status: "Complated",
-//     },
-//     {
-//       key: "2",
-//       name: "John",
-//       age: 42,
-//       address: "10 Downing Street",
-//       status: "Complated",
-//     },
-//     {
-//       key: "2",
-//       name: "John",
-//       age: 42,
-//       address: "10 Downing Street",
-//       status: "Complated",
-//     },
-//     {
-//       key: "2",
-//       name: "John",
-//       age: 42,
-//       address: "10 Downing Street",
-//       status: "Complated",
-//     },
-//     {
-//       key: "2",
-//       name: "John",
-//       age: 42,
-//       address: "10 Downing Street",
-//       status: "Complated",
-//     },
-//   ];
-
-//   const columns = [
-//     {
-//       title: "Name",
-//       dataIndex: "name",
-//       key: "name",
-//     },
-//     {
-//       title: "Email",
-//       dataIndex: "age",
-//       key: "age",
-//     },
-//     {
-//       title: "Role",
-//       dataIndex: "address",
-//       key: "address",
-//     },
-//     {
-//       title: "Status",
-//       dataIndex: "availability",
-//       key: "address",
-//       render: () => {
-//         return (
-//           <div>
-//             <Tag color="blue" className="">
-//               Panding
-//             </Tag>
-//             <Tag color="blue-inverse" className="">
-//               Confirmed
-//             </Tag>
-//           </div>
-//         );
-//       },
-//     },
-//     {
-//       title: "Action",
-//       dataIndex: "action",
-//       key: "action",
-//       render: () => {
-//         return (
-//           <div className="bg-gray-100 p-1 rounded-lg hover:scale-125 transition-all w-fit">
-//             <GiCarKey className="text-xl" />
-//           </div>
-//         );
-//       },
-//     },
-//   ];
-//   return (
-//     <div>
-//       <div className="bg-gray-200 p-4 space-y-4 rounded-lg  ">
-//         <div className="h-full">
-//           <Table dataSource={dataSource} columns={columns} />
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default ManageUser;
-
-import { Table, Tag, Button, message } from "antd";
+import { Table, Tag, Button, message, Spin } from "antd";
 import React from "react";
+import {
+  useGetAllUsersQuery,
+  useUpdateUserMutation,
+} from "../../redux/features/user/userApi";
 
 const ManageUser = () => {
-  const [dataSource, setDataSource] = React.useState([
-    {
-      key: "1",
-      name: "Mike",
-      email: "mike@example.com",
-      role: "User",
-      status: "Active",
-    },
-    {
-      key: "2",
-      name: "John",
-      email: "john@example.com",
-      role: "Admin",
-      status: "Blocked",
-    },
-  ]);
+  const { data, error, isLoading } = useGetAllUsersQuery(); // Fetching all users
+  const [updateUser, { isLoading: isUpdating }] = useUpdateUserMutation(); // Update user mutation
 
-  // Function to change the role of a user
-  const handleChangeRole = (key) => {
-    setDataSource((prev) =>
-      prev.map((user) => {
-        if (user.key === key) {
-          return { ...user, role: user.role === "User" ? "Admin" : "User" };
-        }
-        return user;
-      })
-    );
-    message.success("User role changed successfully.");
-  };
+  // Handle loading state
+  if (isLoading) {
+    return <Spin size="large" />; // Show a loading spinner while fetching data
+  }
 
-  // Function to change the status of a user (block/activate)
-  const handleChangeStatus = (key) => {
-    setDataSource((prev) =>
-      prev.map((user) => {
-        if (user.key === key) {
-          return {
-            ...user,
-            status: user.status === "Active" ? "Blocked" : "Active",
-          };
-        }
-        return user;
-      })
-    );
-    message.success("User status updated successfully.");
-  };
+  // Handle error state
+  if (error) {
+    message.error("Failed to load users.");
+    return null; // Return null or a fallback UI
+  }
 
+  // Define columns for the Ant Design Table
   const columns = [
     {
       title: "",
@@ -187,49 +41,79 @@ const ManageUser = () => {
       title: "Role",
       dataIndex: "role",
       key: "role",
-      render: (role) => {
-        return <Tag color={role === "Admin" ? "green" : "blue"}>{role}</Tag>;
-      },
+      render: (role) => (
+        <Tag color={role === "admin" ? "green" : "blue"}>{role}</Tag>
+      ),
     },
     {
       title: "Status",
       dataIndex: "status",
       key: "status",
-      render: (status) => {
-        return (
-          <Tag color={status === "Active" ? "green" : "red"}>{status}</Tag>
-        );
-      },
+      render: (status) => (
+        <Tag color={status === "active" ? "green" : "red"}>{status}</Tag>
+      ),
     },
     {
       title: "Action",
       dataIndex: "action",
       key: "action",
-      render: (_, record) => {
-        return (
-          <div className="flex gap-2">
-            {/* Button to change the user's role */}
-            <Button type="default" onClick={() => handleChangeRole(record.key)}>
-              {record.role === "User" ? "Make Admin" : "Make User"}
-            </Button>
-            {/* Button to change the user's status (block/activate) */}
-            <Button
-              type="default"
-              onClick={() => handleChangeStatus(record.key)}
-            >
-              {record.status === "Active" ? "Block" : "Activate"}
-            </Button>
-          </div>
-        );
-      },
+      render: (_, record) => (
+        <div className="flex gap-2">
+          <Button
+            type="default"
+            onClick={() => handleChangeRole(record.key, record.role)}
+            loading={isUpdating} // Show loading state for the button
+          >
+            {record.role === "user" ? "Make Admin" : "Make User"}
+          </Button>
+          <Button
+            type="default"
+            onClick={() => handleChangeStatus(record.key, record.status)}
+            loading={isUpdating} // Show loading state for the button
+          >
+            {record.status === "active" ? "Block" : "Activate"}
+          </Button>
+        </div>
+      ),
     },
   ];
 
+  // Transform data if necessary to match the expected format
+  const dataSource = data?.data?.map((user) => ({
+    key: user._id, // Assuming _id is the user ID
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    status: user.status,
+  }));
+
+  // Handle role change
+  const handleChangeRole = async (userId, currentRole) => {
+    const newRole = currentRole === "user" ? "admin" : "user"; // Toggle the role
+    try {
+      await updateUser({ id: userId, role: newRole }).unwrap();
+      message.success(`User role updated to ${newRole}.`);
+    } catch (error) {
+      console.error("Error updating user role:", error);
+      message.error("Failed to update user role.");
+    }
+  };
+
+  // Handle status change
+  const handleChangeStatus = async (userId, currentStatus) => {
+    const newStatus = currentStatus === "active" ? "block" : "active";
+    try {
+      await updateUser({ id: userId, status: newStatus }).unwrap();
+      message.success(`User status updated to ${newStatus}.`);
+    } catch (error) {
+      message.error("Failed to update user status.");
+    }
+  };
+
   return (
     <div className="bg-white rounded-lg">
-      <div className="rounded-lg p-4 ">
+      <div className="rounded-lg p-4">
         <div className="h-full border-2 rounded-lg">
-          {/* User management table with role and status actions */}
           <Table dataSource={dataSource} columns={columns} />
         </div>
       </div>
