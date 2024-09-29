@@ -30,7 +30,17 @@ const ManageReturnCarPage = () => {
         hourlyRate: `$${booking.carId.pricePerHour}/hour`,
         status: booking.status,
       }));
-      setCarList(mappedCars);
+      // Sort bookings by status (pending, due-pay, completed, etc.)
+      const statusPriority = {
+        approved: 1,
+        "due-pay": 2,
+      };
+
+      const sortedBookings = mappedCars.sort(
+        (a, b) => statusPriority[a.status] - statusPriority[b.status]
+      );
+
+      setCarList(sortedBookings);
     }
   }, [bookingData]);
 

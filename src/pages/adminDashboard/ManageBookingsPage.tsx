@@ -30,7 +30,22 @@ const ManageBookingsPage = () => {
         pricePerHour: `$${booking?.carId?.pricePerHour || "0"}`,
         status: booking?.status,
       }));
-      setBookings(formattedBookings);
+
+      // Define a priority map for statuses
+      const statusPriority = {
+        pending: 1,
+        approved: 2,
+        "due-pay": 3,
+        completed: 4,
+        canceled: 5,
+      };
+
+      // Sort bookings based on the defined priority
+      const sortedBookings = formattedBookings.sort((a, b) => {
+        return statusPriority[a.status] - statusPriority[b.status];
+      });
+
+      setBookings(sortedBookings); // Set sorted bookings to state
     }
   }, [data]);
 
@@ -109,10 +124,17 @@ const ManageBookingsPage = () => {
         // Conditional tag color based on booking status
         const color =
           status === "approved"
-            ? "green"
-            : status === "Canceled"
-            ? "red"
-            : "orange"; // Default for pending
+            ? "green" // Green for approved
+            : status === "due-pay"
+            ? "red" // Red for due-pay
+            : status === "completed"
+            ? "blue" // Blue for completed
+            : status === "pending"
+            ? "orange" // Orange for pending
+            : status === "canceled"
+            ? "grey" // Grey for canceled
+            : "default";
+
         return <Tag color={color}>{status}</Tag>;
       },
     },

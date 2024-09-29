@@ -1,181 +1,123 @@
 import React, { useState } from "react";
-import { Form, Input, Button, message, Card, Select } from "antd";
-import { PayCircleOutlined } from "@ant-design/icons";
+import { message, Card } from "antd";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { TbCurrencyTaka } from "react-icons/tb";
+import { useUpdateBookingStatusMutation } from "../../redux/features/booking/bookingApi";
 
 const PaymentManagementPage = () => {
-  const [form] = Form.useForm();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm();
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const { state } = useLocation();
 
-  const onFinish = (values) => {
+  const [updateBookingStatus] = useUpdateBookingStatusMutation();
+  const {
+    carDetails = "Unknown Car",
+    amountDue = "0",
+    bookingId,
+  } = state || {};
+
+  if (!bookingId) {
+    console.error("Booking ID is missing.");
+  }
+
+  const onSubmit = async (values) => {
     setLoading(true);
-    // Simulate payment processing
-    setTimeout(() => {
-      setLoading(false);
+
+    try {
+      // Simulate API call for payment processing
+      await new Promise((resolve) => setTimeout(resolve, 2000));
       message.success("Payment successful!");
-      form.resetFields();
-    }, 2000);
+
+      const result = await updateBookingStatus({
+        id: bookingId,
+        status: "completed",
+      }).unwrap();
+      message.success("Booking status updated to 'completed'");
+      console.log("Booking status update response: ", result);
+
+      // Reset the form fields
+      reset();
+
+      // Redirect to MyBooking page after successful payment and form reset
+      // navigate("myBookings");
+      navigate("/dashboard/myBookings");
+    } catch (error) {
+      message.error("Failed to update booking status");
+      console.error("Error updating booking status: ", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-semibold mb-4">Payment Management</h1>
+      {/* <h1 className="text-2xl font-semibold mb-4">Payment Management</h1> */}
       <Card className="shadow-md" title="Complete Your Payment">
-        <Form form={form} layout="vertical" onFinish={onFinish}>
-          <Form.Item
-            label="Car Details"
-            name="carDetails"
-            initialValue="Toyota Camry, 2022"
-          >
-            <Input disabled />
-          </Form.Item>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="mb-4">
+            <label className="block mb-2">Car Details</label>
+            <input
+              {...register("carDetails")}
+              defaultValue={carDetails}
+              disabled
+              className="border rounded px-3 py-2 w-full"
+            />
+          </div>
 
-          <Form.Item label="Amount Due" name="amountDue" initialValue="₹5,000">
-            <Input disabled />
-          </Form.Item>
+          <div className="mb-4">
+            <label className="block mb-2">Amount Due</label>
+            <div className="flex items-center border rounded px-3 py-2 w-full">
+              <TbCurrencyTaka className="mr-2" />
+              <input
+                {...register("amountDue")}
+                defaultValue={amountDue}
+                disabled
+                className="w-full border-none outline-none"
+              />
+            </div>
+            {amountDue === "0" && (
+              <p className="text-red-500 mt-1">
+                No payment required for this booking.
+              </p>
+            )}
+          </div>
 
-          <Form.Item
-            label="Payment Method"
-            name="paymentMethod"
-            rules={[
-              { required: true, message: "Please select a payment method!" },
-            ]}
-          >
-            <Select placeholder="Select payment method">
-              <Select.Option value="creditCard">Credit Card</Select.Option>
-              <Select.Option value="paypal">PayPal</Select.Option>
-              <Select.Option value="bankTransfer">Bank Transfer</Select.Option>
-            </Select>
-          </Form.Item>
-
-          <Form.Item
-            label="Payment Details"
-            name="paymentDetails"
-            rules={[
-              { required: true, message: "Please enter your payment details!" },
-            ]}
-          >
-            <Input.TextArea rows={4} placeholder="Enter your payment details" />
-          </Form.Item>
-
-          <Form.Item>
-            <Button
-              type="primary"
-              htmlType="submit"
-              icon={<PayCircleOutlined />}
-              loading={loading}
+          <div className="mb-4">
+            <label className="block mb-2">Payment Method</label>
+            <select
+              {...register("paymentMethod", {
+                required: "Please select a payment method",
+              })}
+              className="border rounded px-3 py-2 w-full"
             >
-              Pay Now
-            </Button>
-          </Form.Item>
-        </Form>
+              <option value="">Select Payment Method</option>
+              <option value="creditCard">Credit Card</option>
+              <option value="debitCard">Debit Card</option>
+              <option value="paypal">PayPal</option>
+            </select>
+            {errors.paymentMethod && (
+              <p className="text-red-500">{errors.paymentMethod.message}</p>
+            )}
+          </div>
+
+          <button
+            type="submit"
+            className="bg-blue-500 text-white px-4 py-2 rounded w-full"
+            disabled={loading}
+          >
+            {loading ? "Processing..." : "Complete Payment"}
+          </button>
+        </form>
       </Card>
     </div>
   );
 };
 
 export default PaymentManagementPage;
-
-
-// import React, { useState } from "react";
-// import { Form, Input, Button, Modal, notification } from "antd";
-// import { CreditCardOutlined } from "@ant-design/icons";
-
-// const PaymentManagementPage = () => {
-//   const [isModalOpen, setIsModalOpen] = useState(false);
-
-//   const showModal = () => {
-//     setIsModalOpen(true);
-//   };
-
-//   const handleOk = () => {
-//     setIsModalOpen(false);
-//   };
-
-//   const handleCancel = () => {
-//     setIsModalOpen(false);
-//   };
-
-//   const onFinish = (values) => {
-//     console.log("Payment Details:", values);
-//     notification.success({
-//       message: "Payment Successful",
-//       description: "Your payment has been processed successfully.",
-//     });
-//     handleOk(); // Close modal after successful payment
-//   };
-
-//   return (
-//     <div className="p-4">
-//       <div className="flex justify-center">
-//         <Button
-//           type="primary"
-//           onClick={showModal}
-//           icon={<CreditCardOutlined />}
-//         >
-//           Proceed to Payment
-//         </Button>
-//       </div>
-
-//       <Modal
-//         title="Payment Details"
-//         open={isModalOpen}
-//         onOk={handleOk}
-//         onCancel={handleCancel}
-//         footer={null}
-//       >
-//         <Form
-//           layout="vertical"
-//           onFinish={onFinish}
-//           initialValues={{ amount: 0 }}
-//         >
-//           <Form.Item
-//             label="Card Number"
-//             name="cardNumber"
-//             rules={[
-//               { required: true, message: "Please input your card number!" },
-//             ]}
-//           >
-//             <Input placeholder="Enter your card number" />
-//           </Form.Item>
-
-//           <Form.Item
-//             label="Card Expiry Date"
-//             name="expiryDate"
-//             rules={[
-//               {
-//                 required: true,
-//                 message: "Please input your card expiry date!",
-//               },
-//             ]}
-//           >
-//             <Input placeholder="MM/YY" />
-//           </Form.Item>
-
-//           <Form.Item
-//             label="CVV"
-//             name="cvv"
-//             rules={[{ required: true, message: "Please input your CVV!" }]}
-//           >
-//             <Input placeholder="Enter your CVV" />
-//           </Form.Item>
-
-//           <Form.Item
-//             label="Amount"
-//             name="amount"
-//             rules={[{ required: true, message: "Please input the amount!" }]}
-//           >
-//             <Input type="number" placeholder="Enter the amount" />
-//           </Form.Item>
-
-//           <Form.Item>
-//             <Button type="primary" htmlType="submit">
-//               Pay Now
-//             </Button>
-//           </Form.Item>
-//         </Form>
-//       </Modal>
-//     </div>
-//   );
-// };
-
-// export default PaymentManagementPage;
