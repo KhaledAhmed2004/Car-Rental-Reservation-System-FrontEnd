@@ -1,192 +1,152 @@
-// import { Table, Tag } from "antd";
-// import React from "react";
-// import { AiOutlineDelete } from "react-icons/ai";
-// import { IoIosAddCircleOutline } from "react-icons/io";
-// import { MdOutlineMode } from "react-icons/md";
-// import { GiCarKey } from "react-icons/gi";
-
-// const ManageReturnCarPage = () => {
-//   const dataSource = [
-//     {
-//       key: "1",
-//       name: "Mike",
-//       age: 32,
-//       address: "10 Downing Street",
-//       status: "On-Going",
-//     },
-//     {
-//       key: "2",
-//       name: "John",
-//       age: 42,
-//       address: "10 Downing Street",
-//       status: "Complated",
-//     },
-//   ];
-
-//   const columns = [
-//     {
-//       title: "Car Mode",
-//       dataIndex: "name",
-//       key: "name",
-//     },
-//     {
-//       title: "Rental Dates",
-//       dataIndex: "age",
-//       key: "age",
-//     },
-//     {
-//       title: "Price",
-//       dataIndex: "address",
-//       key: "address",
-//     },
-//     {
-//       title: "Availability",
-//       dataIndex: "availability",
-//       key: "address",
-//       render: () => {
-//         return (
-//           <div>
-//             <Tag color="blue" className="">
-//               Panding
-//             </Tag>
-//             <Tag color="blue-inverse" className="">
-//               Confirmed
-//             </Tag>
-//           </div>
-//         );
-//       },
-//     },
-//     {
-//       title: "Action",
-//       dataIndex: "action",
-//       key: "action",
-//       render: () => {
-//         return (
-//           <div className="bg-gray-100 p-1 rounded-lg hover:scale-125 transition-all w-fit">
-//             <GiCarKey className="text-xl" />
-//           </div>
-//         );
-//       },
-//     },
-//   ];
-//   return (
-//     <div>
-//       <div className="bg-gray-200 p-4 space-y-4 rounded-lg  ">
-//         <div className="h-full">
-//           <Table dataSource={dataSource} columns={columns} />
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default ManageReturnCarPage;
-
-import { Table, Tag, Button } from "antd"; // Import Button for return option
-import React, { useState } from "react"; // Import useState for managing state
-import { GiCarKey } from "react-icons/gi"; // Import icon for return action
+import { Table, Tag, Button, Spin } from "antd";
+import React, { useEffect, useState } from "react";
+import { GiCarKey } from "react-icons/gi";
+import {
+  useGetAllBookingsQuery,
+  useUpdateBookingStatusMutation,
+} from "../../redux/features/booking/bookingApi";
+import { useReturnCarMutation } from "../../redux/features/car/carApi";
 
 const ManageReturnCarPage = () => {
-  // State to manage the booked cars data
-  const [cars, setCars] = useState([
-    {
-      key: "1",
-      name: "Mike",
-      rentalDates: "2023-09-01 to 2023-09-10",
-      price: "$200",
-      status: "On-Going",
-      availability: "Pending",
-    },
-    {
-      key: "2",
-      name: "John",
-      rentalDates: "2023-09-05 to 2023-09-15",
-      price: "$300",
-      status: "Completed",
-      availability: "Confirmed",
-    },
-  ]);
+  // Fetch all bookings data using the Redux query
+  const { data: bookingData, isLoading } = useGetAllBookingsQuery();
 
-  // Function to handle car return
-  const handleReturnCar = (record) => {
-    // Update the status and availability of the returned car
-    const updatedCars = cars.map((car) =>
-      car.key === record.key
-        ? { ...car, status: "Completed", availability: "Available" }
-        : car
-    );
-    setCars(updatedCars);
+  // State to store the mapped car data for the table
+  const [carList, setCarList] = useState([]);
+
+  // Initialize mutation hooks for updating booking status and returning the car
+  const [updateBookingStatus] = useUpdateBookingStatusMutation();
+  const [returnCar] = useReturnCarMutation();
+
+  // Map bookings to car data when bookingData changes
+  useEffect(() => {
+    if (bookingData) {
+      // Map each booking to a simplified car object for the table
+      const mappedCars = bookingData?.data.map((booking) => ({
+        key: booking._id,
+        carModel: `${booking.carId.brand} ${booking.carId.model}`,
+        userName: booking.userId?.name || "Unknown",
+        rentalDetails: `${booking.date} ${booking.startTime}`,
+        hourlyRate: `$${booking.carId.pricePerHour}/hour`,
+        status: booking.status,
+      }));
+      setCarList(mappedCars);
+    }
+  }, [bookingData]);
+
+  // Function to handle the return of a car
+  const handleCarReturn = async (carRecord) => {
+    try {
+      // Step 1: Update the booking status to "due-pay"
+      await updateBookingStatus({ id: carRecord.key, status: "due-pay" });
+
+      // Step 2: Create a formatted endTime (current time in HH:mm format)
+      const currentTime = new Date();
+      const formattedEndTime = `${currentTime
+        .getHours()
+        .toString()
+        .padStart(2, "0")}:${currentTime
+        .getMinutes()
+        .toString()
+        .padStart(2, "0")}`;
+
+      // Step 3: Call returnCar mutation to mark the car as returned
+      await returnCar({
+        bookingId: carRecord.key,
+        endTime: formattedEndTime,
+      });
+
+      // Step 4: Update the local state to reflect the car's return status
+      const updatedCarList = carList.map((car) =>
+        car.key === carRecord.key
+          ? { ...car, status: "due-pay" } // Change status to "due-pay" after return
+          : car
+      );
+      setCarList(updatedCarList);
+    } catch (error) {
+      console.error("Error processing the car return:", error);
+    }
   };
 
   // Define columns for the table
-  const columns = [
+  const tableColumns = [
     {
-      title: "",
+      title: "No.", // Column title for row index
       key: "index",
-      render: (_, __, index) => index + 1, // Display row index (1-based)
+      render: (_, __, index) => index + 1, // Display the row index starting from 1
     },
     {
-      title: "Car Model",
-      dataIndex: "name",
-      key: "name",
+      title: "Car Model", // Car model column
+      dataIndex: "carModel",
+      key: "carModel",
     },
     {
-      title: "Rental Dates",
-      dataIndex: "rentalDates",
-      key: "rentalDates",
+      title: "Rental Details", // Rental date and time column
+      dataIndex: "rentalDetails",
+      key: "rentalDetails",
     },
     {
-      title: "Price",
-      dataIndex: "price",
-      key: "price",
+      title: "Price per Hour", // Hourly rate column
+      dataIndex: "hourlyRate",
+      key: "hourlyRate",
     },
     {
-      title: "Status",
+      title: "Status", // Status column to display booking status with color coding
       dataIndex: "status",
       key: "status",
       render: (status) => {
-        // Conditional rendering for status
-        const color = status === "Completed" ? "green" : "blue";
-        return <Tag color={color}>{status}</Tag>;
+        // Conditional rendering based on the booking status
+        let statusColor;
+        if (status === "approved") {
+          statusColor = "blue"; // Blue for approved
+        } else if (status === "due-pay") {
+          statusColor = "red"; // Red for due-pay
+        } else {
+          statusColor = "green"; // Green for others
+        }
+        return <Tag color={statusColor}>{status}</Tag>;
       },
     },
     {
-      title: "Availability",
-      dataIndex: "availability",
-      key: "availability",
-      render: (availability) => {
-        // Render the availability status
-        const color = availability === "Available" ? "green" : "orange";
-        return <Tag color={color}>{availability}</Tag>;
-      },
-    },
-    {
-      title: "Action",
-      dataIndex: "action",
+      title: "Action", // Action column to handle car return
       key: "action",
-      render: (_, record) => {
-        // Render the return button only if the car is "On-Going"
-        return record.status === "On-Going" ? (
-          <Button
-            type="primary"
-            onClick={() => handleReturnCar(record)}
-            icon={<GiCarKey />}
-          >
-            Return Car
-          </Button>
-        ) : (
-          <span>Returned</span>
-        );
+      render: (_, carRecord) => {
+        // Show "Return Car" button only if the status is "approved"
+        if (carRecord.status === "approved") {
+          return (
+            <Button
+              type="primary"
+              onClick={() => handleCarReturn(carRecord)} // Trigger return process
+              icon={<GiCarKey />} // Display car key icon
+            >
+              Return Car
+            </Button>
+          );
+        }
+
+        // Do not show any tag or button for statuses other than "approved"
+        return null;
       },
     },
   ];
 
+  // Display a loading spinner while bookings are being fetched
+  if (isLoading) {
+    return <Spin size="large" />;
+  }
+
+  // Filter out cars that are already returned (completed) or pending approval
+  const carsToDisplay = carList.filter(
+    (car) => car.status !== "completed" && car.status !== "pending"
+  );
+
+  // Render the table with the filtered car data
   return (
     <div>
       <div className="bg-white p-4 rounded-lg">
         <div className="h-full border-2 rounded-lg">
-          {/* Render the table with car data */}
-          <Table dataSource={cars} columns={columns} />
+          {/* Table component from Ant Design to display the car data */}
+          <Table dataSource={carsToDisplay} columns={tableColumns} />
         </div>
       </div>
     </div>

@@ -9,48 +9,44 @@ import {
 } from "../../redux/features/booking/bookingApi";
 
 const ManageBookingsPage = () => {
+  // Fetching bookings data using Redux Toolkit Query
   const { data, error, isLoading } = useGetAllBookingsQuery();
   const [updateBookingStatus] = useUpdateBookingStatusMutation();
   const [deleteBooking] = useDeleteBookingMutation();
 
-  console.log("Booking data:", data?.data);
-
-  // State to manage the bookings data
+  // State to store the formatted bookings
   const [bookings, setBookings] = useState([]);
 
-  // Effect to set bookings once data is fetched
+  // Effect hook to format and store the bookings once fetched
   useEffect(() => {
     if (data?.data) {
-      // Map the booking data to match the required format
-      const formattedBookings = data.data.map((booking) => ({
-        key: booking._id, // unique key for the table
-        carModel: `${booking.carId?.brand || "Unknown"} ${
-          booking.carId?.model || "Unknown"
-        }`, // Combine brand and model
-        userName: booking.userId?.name || "Unknown", // assuming userId has name field
-        rentalDates: `${booking.date} in ${booking.startTime}`, // format rental dates
-        pricePerHour: `$${booking.carId?.pricePerHour || "0"}`, // format price per hour
-        status: booking.status, // Assuming this is a string like 'Pending', 'Confirmed', 'Canceled'
+      const formattedBookings = data?.data?.map((booking) => ({
+        key: booking?._id,
+        carModel: `${booking?.carId?.brand || "Unknown"} ${
+          booking?.carId?.model || "Unknown"
+        }`,
+        userName: booking.userId?.name || "Unknown",
+        rentalDates: `${booking?.date} at ${booking?.startTime}`,
+        pricePerHour: `$${booking?.carId?.pricePerHour || "0"}`,
+        status: booking?.status,
       }));
       setBookings(formattedBookings);
     }
   }, [data]);
 
-  // Function to handle approving a booking with confirmation
-  const handleApprove = (record) => {
+  // Function to confirm and approve a booking
+  const confirmBookingApproval = (record) => {
     Modal.confirm({
       title: "Are you sure you want to approve this booking?",
       onOk: async () => {
         try {
-          // Call the backend API to update the booking status
-          await updateBookingStatus({ id: record.key, status: "confirmed" });
-
+          await updateBookingStatus({ id: record.key, status: "approved" });
           const updatedBookings = bookings.map((booking) =>
             booking.key === record.key
-              ? { ...booking, status: "Confirmed" }
+              ? { ...booking, status: "approved" }
               : booking
           );
-          setBookings(updatedBookings);
+          setBookings(updatedBookings); // Update the state with the new status
           message.success("Booking approved successfully.");
         } catch (error) {
           message.error("Failed to approve the booking.");
@@ -59,17 +55,17 @@ const ManageBookingsPage = () => {
     });
   };
 
-  // Function to handle canceling a booking with confirmation
-  const handleCancel = (record) => {
+  // Function to confirm and cancel/delete a booking
+  const confirmBookingCancellation = (record) => {
     Modal.confirm({
       title: "Are you sure you want to cancel and delete this booking?",
       onOk: async () => {
         try {
-          await deleteBooking({ id: record.key }); // <-- Call delete mutation
+          await deleteBooking({ id: record.key });
           const updatedBookings = bookings.filter(
             (booking) => booking.key !== record.key
           );
-          setBookings(updatedBookings);
+          setBookings(updatedBookings); // Remove the canceled booking from the state
           message.error("Booking canceled and deleted.");
         } catch (error) {
           message.error("Failed to delete the booking.");
@@ -78,12 +74,12 @@ const ManageBookingsPage = () => {
     });
   };
 
-  // Define columns for the table
+  // Columns definition for the bookings table
   const columns = [
     {
       title: "",
       key: "index",
-      render: (_, __, index) => index + 1, // Render the index, starting from 1
+      render: (_, __, index) => index + 1, // Index of the booking
     },
     {
       title: "Car Model",
@@ -110,52 +106,48 @@ const ManageBookingsPage = () => {
       dataIndex: "status",
       key: "status",
       render: (status) => {
-        // Conditional rendering for status
+        // Conditional tag color based on booking status
         const color =
-          status === "Confirmed"
+          status === "approved"
             ? "green"
             : status === "Canceled"
             ? "red"
-            : "orange"; // Assuming "Pending" will fall under orange
+            : "orange"; // Default for pending
         return <Tag color={color}>{status}</Tag>;
       },
     },
     {
       title: "Action",
-      dataIndex: "action",
       key: "action",
       render: (_, record) => {
+        // Only show action buttons if status is "pending"
         return (
-          <div className="flex gap-2">
-            {/* Show approve button only if status is Pending */}
-            {record.status === "pending" && (
+          record.status === "pending" && (
+            <div className="flex gap-2">
               <Button
                 type="primary"
-                onClick={() => handleApprove(record)}
+                onClick={() => confirmBookingApproval(record)}
                 icon={<TiTickOutline />}
                 className="flex items-center gap-1"
               >
                 Approve
               </Button>
-            )}
-            {/* Disable cancel button if the status is Confirmed or already Canceled */}
-            {record.status !== "Canceled" && record.status !== "confirmed" && (
               <Button
                 type="danger"
-                onClick={() => handleCancel(record)}
+                onClick={() => confirmBookingCancellation(record)}
                 icon={<MdOutlineCancel />}
                 className="flex items-center gap-1"
               >
                 Cancel
               </Button>
-            )}
-          </div>
+            </div>
+          )
         );
       },
     },
   ];
 
-  // Handle loading state
+  // Handle loading and error states
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error loading bookings</div>;
 
@@ -163,7 +155,6 @@ const ManageBookingsPage = () => {
     <div>
       <div className="bg-white p-4 rounded-lg">
         <div className="h-full border-2 rounded-lg">
-          {/* Render the table with booking data */}
           <Table dataSource={bookings} columns={columns} />
         </div>
       </div>
