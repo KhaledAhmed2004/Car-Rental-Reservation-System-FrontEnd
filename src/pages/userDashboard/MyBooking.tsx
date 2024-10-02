@@ -42,20 +42,6 @@ const MyBookingsPage = () => {
     console.log("Data from API:", data); // Check if data is fetched correctly
     console.log("API Error:", error); // Log any potential API errors
     if (data && data?.data) {
-      // const transformedBookings = data.data.map((booking) => ({
-      //   key: booking._id,
-      //   carModel: `${booking.carId.brand} ${booking.carId.model}`,
-      //   rentalDates: `${booking.date} ${booking.startTime}`,
-      //   price: `$${booking.carId.pricePerHour}/hour`,
-      //   status: booking.status,
-      //   totalCost: booking.totalCost,
-      //   drivingLicense: booking.drivingLicense,
-      //   nidOrPassport: booking.nidOrPassport,
-      //   additionalOptions: [
-      //     { name: "Child Seat", selected: booking.additionalOptions.childSeat },
-      //     { name: "GPS", selected: booking.additionalOptions.gps },
-      //   ],
-      // }));
       const transformedBookings = data.data.map((booking) => ({
         key: booking._id,
         carModel: `${booking.carId.brand} ${booking.carId.model}`,
@@ -101,26 +87,6 @@ const MyBookingsPage = () => {
     });
   };
 
-  // Open Modify Modal and populate fields with booking data
-  // const openModifyModal = (key) => {
-  //   const booking = bookings.find((b) => b.key === key);
-  //   console.log("Selected Booking for Modification:", booking); // Log booking details
-  //   setCurrentBooking(booking);
-  //   setValue("carModel", booking.carModel);
-  //   setValue("price", booking.price);
-  //   setValue("drivingLicense", booking.drivingLicense);
-  //   setValue("nidOrPassport", booking.nidOrPassport);
-  //   setValue(
-  //     "additionalOptions.childSeat",
-  //     booking.additionalOptions.find((option) => option.name === "Child Seat")
-  //       .selected
-  //   );
-  //   setValue(
-  //     "additionalOptions.gps",
-  //     booking.additionalOptions.find((option) => option.name === "GPS").selected
-  //   );
-  //   setIsModifyModalVisible(true);
-  // };
   const openModifyModal = (key) => {
     const booking = bookings.find((b) => b.key === key);
     console.log("Selected Booking for Modification:", booking); // Log booking details
@@ -134,15 +100,15 @@ const MyBookingsPage = () => {
     setValue("nidOrPassport", booking.nidOrPassport);
 
     // Check if additionalOptions is an array
-    if (Array.isArray(booking?.additionalOptions)) {
+    if (Array.isArray(booking.additionalOptions)) {
       setValue(
         "additionalOptions.childSeat",
-        booking?.additionalOptions.find((option) => option.name === "Child Seat")
+        booking.additionalOptions.find((option) => option.name === "Child Seat")
           ?.selected || false // Fallback to false
       );
       setValue(
         "additionalOptions.gps",
-        booking?.additionalOptions.find((option) => option.name === "GPS")
+        booking.additionalOptions.find((option) => option.name === "GPS")
           ?.selected || false // Fallback to false
       );
     } else {
@@ -150,8 +116,9 @@ const MyBookingsPage = () => {
         "Expected additionalOptions to be an array but got:",
         booking.additionalOptions
       );
-      setValue("additionalOptions.childSeat", false); // Set default values if the structure is incorrect
-      setValue("additionalOptions.gps", false);
+      // setValue("additionalOptions?.childSeat", false);
+      setValue("additionalOptions?.childSeat", false);
+      setValue("additionalOptions?.gps", false);
     }
 
     setIsModifyModalVisible(true);
@@ -165,31 +132,6 @@ const MyBookingsPage = () => {
         amountDue: booking.totalCost,
       },
     });
-  };
-
-  // Handle payment submission
-  const processPayment = async (values) => {
-    setLoading(true);
-    try {
-      console.log("Processing payment for:", currentBooking); // Log payment details
-      // Simulate payment processing
-      setTimeout(async () => {
-        await updateBookingStatus({
-          id: currentBooking?.key,
-          status: "completed",
-        });
-        setLoading(false);
-        message.success(
-          "Payment successful. Booking status updated to completed."
-        );
-        setIsPaymentModalVisible(false);
-        reset();
-      }, 2000);
-    } catch (error) {
-      setLoading(false);
-      message.error("Payment failed.");
-      console.error("Payment error:", error); // Log error for debugging
-    }
   };
 
   // Handle modify booking form submission

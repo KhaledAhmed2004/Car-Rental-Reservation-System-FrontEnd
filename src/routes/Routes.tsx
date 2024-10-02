@@ -19,6 +19,7 @@ import BookingPage from "../pages/BookingPage";
 import PaymentManagementPage from "../pages/userDashboard/PaymentManagementPage";
 import ProtectedRoute from "../layouts/ProtectedRoute";
 import ErrorPage from "../pages/Errorpage";
+import AddCarPage from "../pages/adminDashboard/AddCarPage";
 
 const Router = createBrowserRouter([
   {
@@ -62,6 +63,10 @@ const Router = createBrowserRouter([
       {
         path: "manageCar",
         element: <ManageCarPage />,
+      },
+      {
+        path: "addCar",
+        element: <AddCarPage />,
       },
       {
         path: "manageBookings",
