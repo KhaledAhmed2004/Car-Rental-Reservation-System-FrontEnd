@@ -111,10 +111,25 @@ const ManageUser = () => {
   };
 
   return (
-    <div className="bg-white rounded-lg">
+    // <div className="bg-white rounded-lg">
+    //   <div className="rounded-lg p-4">
+    //     <div className="h-full border-2 rounded-lg">
+    //       <Table dataSource={dataSource} columns={columns} />
+    //     </div>
+    //   </div>
+    // </div>
+    <div className="bg-white rounded-lg overflow-hidden">
+      {" "}
+      {/* Add overflow-hidden to the outer div */}
       <div className="rounded-lg p-4">
-        <div className="h-full border-2 rounded-lg">
-          <Table dataSource={dataSource} columns={columns} />
+        <div className="h-full border-2 rounded-lg overflow-x-auto">
+          {" "}
+          {/* Add overflow-x-auto for horizontal scrolling */}
+          <Table
+            dataSource={dataSource}
+            columns={columns}
+            className="min-w-full" // Ensure the table takes up full width and is scrollable
+          />
         </div>
       </div>
     </div>

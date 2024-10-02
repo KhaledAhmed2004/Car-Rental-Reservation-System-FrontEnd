@@ -232,6 +232,7 @@ const MyBookingsPage = () => {
             })}
           columns={columns}
           pagination={{ pageSize: 10 }}
+          scroll={{ x: 800 }}
         />
       ),
     },
@@ -245,6 +246,7 @@ const MyBookingsPage = () => {
           )}
           columns={columns}
           pagination={{ pageSize: 10 }}
+          scroll={{ x: 800 }}
         />
       ),
     },

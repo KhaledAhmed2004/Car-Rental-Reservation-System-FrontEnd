@@ -153,11 +153,18 @@ const ManageReturnCarPage = () => {
   // Render the table with the filtered car data
   return (
     <div>
-      <div className="bg-white p-4 rounded-lg">
+      {/* <div className="bg-white p-4 rounded-lg">
         <div className="h-full border-2 rounded-lg">
-          {/* Table component from Ant Design to display the car data */}
           <Table dataSource={carsToDisplay} columns={tableColumns} />
         </div>
+      </div> */}
+        <div className="overflow-x-auto">
+        <Table
+          dataSource={carsToDisplay}
+          columns={tableColumns}
+          className="border-2 rounded-lg"
+          scroll={{ x: "max-content" }}
+        />
       </div>
     </div>
   );
