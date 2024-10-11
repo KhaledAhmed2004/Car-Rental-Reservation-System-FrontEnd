@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import Zoom from "react-medium-image-zoom";
 import "react-medium-image-zoom/dist/styles.css";
 import { IoCarSportOutline } from "react-icons/io5";
 import { TbCurrencyTaka } from "react-icons/tb";

@@ -21,12 +21,7 @@ const SignInPage: React.FC = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({
-    defaultValues: {
-      email: "johndoe@example.com",
-      password: "password123",
-    },
-  });
+  } = useForm();
 
   // Function to handle form submission
   const onSubmit = async (data) => {

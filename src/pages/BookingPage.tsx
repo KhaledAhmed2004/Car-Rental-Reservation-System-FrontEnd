@@ -132,9 +132,12 @@ const BookingPage = () => {
   // Fetching car data based on selected type, with skip if type is not set
   const { data, isFetching } = useGetAllCarsQuery({ type }, { skip: !type });
 
+  const filteredCarsForShow = data?.data?.filter((car) => !car.isDeleted);
+  console.log("filter data", filteredCarsForShow);
+
   // Function to handle search by car type
   const handleSearch = (data) => {
-    setType(data.type);
+    setType(data?.type);
   };
   return (
     <div className="p-6 max-w-6xl mx-auto min-h-screen">
@@ -191,8 +194,9 @@ const BookingPage = () => {
             >
               <option value="">Select car type</option>
               <option value="SUV">SUV</option>
-              <option value="sedan">Sedan</option>
-              <option value="hatchback">Hatchback</option>
+              <option value="Luxury">Luxury</option>
+              <option value="Electric">Electric</option>
+              <option value="Economy">Economy</option>
             </select>
             {/* {errors.carType && (
               <p className="text-red-500 text-sm mt-1">
@@ -322,7 +326,7 @@ const BookingPage = () => {
       ) : (
         cars && (
           <div className="grid grid-cols-3 gap-2 ">
-            {data?.data?.map((car) => (
+            {filteredCarsForShow?.map((car) => (
               <CarCard key={car._id} car={car} onBookNow={handleBookNow} />
             ))}
           </div>

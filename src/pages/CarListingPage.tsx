@@ -51,6 +51,10 @@ const CarListingPage = () => {
     selectedFuelType,
   });
 
+  // Filter out cars where isDeleted is true
+  const filteredCars = cars?.data?.filter((car) => !car.isDeleted);
+  // console.log("filter data", filteredCars);
+
   const handleForClear = () => {
     setSearchQuery("");
     setType([]);
@@ -429,7 +433,7 @@ const CarListingPage = () => {
       >
         {isLoading
           ? "Loading..."
-          : cars?.data?.map((car) => (
+          : filteredCars.map((car) => (
               <ShowcaseCard
                 carId={car._id}
                 key={car._id}

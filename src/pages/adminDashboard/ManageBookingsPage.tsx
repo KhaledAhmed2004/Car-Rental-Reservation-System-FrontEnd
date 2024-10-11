@@ -175,11 +175,6 @@ const ManageBookingsPage = () => {
 
   return (
     <div>
-      {/* <div className="bg-white p-4 rounded-lg">
-        <div className="h-full border-2 rounded-lg">
-          <Table dataSource={bookings} columns={columns} />
-        </div>
-      </div> */}
       <div className="bg-white rounded-lg overflow-hidden">
         {" "}
         {/* Add overflow-hidden to the outer div */}

@@ -4,7 +4,6 @@ const CarTypesCard = ({ backgoundImg, name }) => {
   return (
     <div className="h-[270px] w-full overflow-hidden rounded-lg relative">
       <div
-        // className="bg-[url(./assets/suvCar.jpg)] bg-center bg-cover bg-no-repeat h-full transition-all hover:scale-110"
         style={{ backgroundImage: `url(${backgoundImg})` }}
         className={`bg-center bg-cover bg-no-repeat h-full transition-all hover:scale-110 w-full`}
       ></div>

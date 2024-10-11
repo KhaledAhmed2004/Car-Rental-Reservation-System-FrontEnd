@@ -16,6 +16,7 @@ const ManageCarPage = () => {
   const imgbb_img_hosting_api = `https://api.imgbb.com/1/upload?key=c9694ec1b6ea6c2dc253de13f8806da0`;
 
   const { data: cars, error, isLoading } = useGetAllCarsQuery();
+  console.log(cars);
   const [updateCar] = useUpdateCarMutation();
   const [deleteCar] = useDeleteCarMutation();
 

@@ -1,9 +1,5 @@
 import React from "react";
 import CarTypesCard from "../../common/molecules/CarTypesCard";
-import suvCar from "../../../assets/suvCar.jpg";
-import economyCars from "../../../assets/economyCars.jpg";
-import LuxuryCars from "../../../assets/LuxuryCars.jpg";
-import ElectricCars from "../../../assets/ElectricCars.jpg";
 const CarTypesSection = () => {
   return (
     <div>
@@ -17,10 +13,22 @@ const CarTypesSection = () => {
         </div>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 px-6 gap-6">
-        <CarTypesCard name={"SUVs"} backgoundImg={suvCar} />
-        <CarTypesCard name={"Economy Cars"} backgoundImg={economyCars} />
-        <CarTypesCard name={"Luxury Cars"} backgoundImg={LuxuryCars} />
-        <CarTypesCard name={"Electric Cars"} backgoundImg={ElectricCars} />
+        <CarTypesCard
+          name={"SUVs"}
+          backgoundImg={"https://i.ibb.co.com/2SjbnfZ/suvCar.jpg"}
+        />
+        <CarTypesCard
+          name={"Economy Cars"}
+          backgoundImg={"https://i.ibb.co.com/swp7sDv/economy-Cars.jpg"}
+        />
+        <CarTypesCard
+          name={"Luxury Cars"}
+          backgoundImg={"https://i.ibb.co.com/1sq9ZKH/Luxury-Cars.jpg"}
+        />
+        <CarTypesCard
+          name={"Electric Cars"}
+          backgoundImg={"https://i.ibb.co.com/wLqyk5L/Electric-Cars.jpg"}
+        />
       </div>
     </div>
   );

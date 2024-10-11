@@ -6,7 +6,7 @@ import AboutUsPage from "../pages/AboutUsPage";
 import CarListingPage from "../pages/CarListingPage";
 import CarDetailsPage from "../pages/CarDetailsPage";
 import SignUpPage from "../pages/SignUpPage";
-import SignInPage from "../pages/SignInpage";
+// import SignInPage from "../pages/SignInpage";
 import DashboardLayout from "../layouts/DashboardLayout";
 import UserOverView from "../pages/userDashboard/UserOverView";
 import MyBooking from "../pages/userDashboard/MyBooking";
@@ -20,6 +20,7 @@ import PaymentManagementPage from "../pages/userDashboard/PaymentManagementPage"
 import ProtectedRoute from "../layouts/ProtectedRoute";
 import ErrorPage from "../pages/Errorpage";
 import AddCarPage from "../pages/adminDashboard/AddCarPage";
+import SignInPage from "../pages/SignInPage";
 
 const Router = createBrowserRouter([
   {
@@ -46,7 +47,11 @@ const Router = createBrowserRouter([
   },
   {
     path: "/dashboard",
-    element: <DashboardLayout />,
+    element: (
+      <ProtectedRoute>
+        <DashboardLayout />
+      </ProtectedRoute>
+    ),
     children: [
       {
         path: "userOverview",
