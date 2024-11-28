@@ -15,7 +15,8 @@ const HeroSection = () => {
   return (
     <div>
       {/* Main container for the hero section with full viewport height */}
-      <div className="relative overflow-hidden w-full h-[calc(100vh-80px)] py-4">
+      {/* <div className="relative overflow-hidden w-full h-[calc(100vh-80px)] py-4"> */}
+      <div className="relative overflow-hidden w-full h-[calc(80vh-80px)] py-4">
         {/* Content container for heading and button */}
         <div className="w-[70%] mx-auto items-center space-y-4 md:space-y-8 z-[100]">
           {/* Animated heading */}
