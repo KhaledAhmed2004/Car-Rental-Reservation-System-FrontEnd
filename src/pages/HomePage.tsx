@@ -4,6 +4,7 @@ import WhyChooseUs from "../components/features/homePage/WhyChooseUs";
 import FeaturedCarsSection from "../components/features/homePage/FeaturedCarsSection";
 import TestimonialSection from "../components/features/homePage/TestimonialSection";
 import OffersSection from "../components/features/homePage/OffersSection";
+import Newsletter from "../components/features/homePage/Newsletter";
 
 const HomePage = () => {
   return (
@@ -12,6 +13,7 @@ const HomePage = () => {
       <FeaturedCarsSection />
       <WhyChooseUs />
       <OffersSection />
+      <Newsletter />
       <TestimonialSection />
     </div>
   );

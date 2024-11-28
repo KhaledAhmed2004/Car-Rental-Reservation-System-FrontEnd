@@ -44,20 +44,6 @@ const Footer = () => {
               <li>Accessibility</li>
             </ul>
           </div>
-          {/* Newsletter Subscription */}
-          <div className="flex flex-col lg:items-star lg:w-1/3 md:items-start md:w-full md:max-w-xs ">
-            <h2 className="mb-4">Subscribe to the newsletter</h2>
-            <div className="relative w-full max-w-sm flex">
-              <input
-                className="w-full border-[2px] border-blue-200 p-2 rounded-lg focus:outline-none"
-                type="text"
-                placeholder="Email..."
-              />
-              <button className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-600 text-white rounded-lg p-1 hover:scale-110 transition-all">
-                <FaArrowRight className="text-xl" />
-              </button>
-            </div>
-          </div>
         </div>
         {/* Footer Bottom Section */}
         <div className="flex flex-col lg:flex-row items-center gap-1 justify-center p-3 mt-4">
