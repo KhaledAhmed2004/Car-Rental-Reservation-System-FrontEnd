@@ -13,8 +13,8 @@ const HomePage = () => {
       <FeaturedCarsSection />
       <WhyChooseUs />
       <OffersSection />
-      <Newsletter />
       <TestimonialSection />
+      <Newsletter />
     </div>
   );
 };
