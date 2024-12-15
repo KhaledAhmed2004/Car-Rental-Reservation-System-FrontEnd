@@ -9,8 +9,8 @@ const MainLayout = () => {
       <Header />
       <div className="mx-auto max-w-7xl pt-[80px]">
         <Outlet />
-        <Footer />
       </div>
+      <Footer />
     </div>
   );
 };

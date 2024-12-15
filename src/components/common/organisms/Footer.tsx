@@ -1,15 +1,14 @@
 import React from "react";
 import { LuCopyright } from "react-icons/lu";
 import Logo from "../atoms/Logo";
-import { FaArrowRight } from "react-icons/fa6";
 import { NavLink } from "react-router-dom";
 import { motion } from "framer-motion";
 
 const Footer = () => {
   return (
     <footer className="mt-4">
-      <div className="border-t-2 px-6 pt-4 rounded-lg bg-white">
-        <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-8 md:flex-row md:justify-between md:items-start">
+      <div className="px-6 pt-4 bg-white">
+        <div className="flex flex-col max-w-7xl mx-auto lg:flex-row lg:justify-between lg:items-start gap-8 md:flex-row md:justify-between md:items-start">
           {/* Logo and description */}
           <div className="flex flex-col items-start lg:w-1/3 text-left md:w-1/2">
             <Logo />
