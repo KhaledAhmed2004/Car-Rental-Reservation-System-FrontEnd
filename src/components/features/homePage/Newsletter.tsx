@@ -28,7 +28,7 @@ const Newsletter = () => {
   };
 
   return (
-    <section className="bg-blue-50 py-12">
+    <section className="py-12">
       <div className="max-w-7xl mx-auto text-center">
         <h2 className="text-3xl font-bold text-gray-800 mb-4">
           Stay Updated with the Latest Offers
